@@ -90,24 +90,24 @@ find_package(Color)
 
 option(CMAKE_BUILD_TYPE "Release/Debug build" RELEASE)
 option(T_CPP_BUILD_STRICT "Build the C++ with strict warnings" OFF)
+option(T_CPP_TESTS "Build the C++ tests" ON)
 
 if(DEFINED ENV{T_DEBUG})
     set(CMAKE_BUILD_TYPE DEBUG)
 else()
-    if (NOT DEFINED CMAKE_BUILD_TYPE)
+    if(NOT DEFINED CMAKE_BUILD_TYPE)
         set(CMAKE_BUILD_TYPE RELEASE)
     endif()
 endif()
 
-if (NOT DEFINED T_CPP_BUILD_STRICT)
+if(NOT DEFINED T_CPP_BUILD_STRICT)
     set(T_CPP_BUILD_STRICT OFF)
 endif()
-
 
 set(T_CPP_SRC "${CMAKE_SOURCE_DIR}")
 message("${Cyan}Building C++ binding${ColorReset}")
 
-if (T_CPP_BUILD_STRICT)
+if(T_CPP_BUILD_STRICT)
     message("${Cyan}Building C++ with strict warnings${ColorReset}")
 else()
     message("${Yellow}Building C++ without strict warnings${ColorReset}")
@@ -169,23 +169,11 @@ else()
     endif()
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
     set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")
-    include_directories("/usr/local/include")
     set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS}")
-    set(CMAKE_SHARED_LIBRARY_SUFFIX .so)
-    # Look for the binary using @loader_path (relative to binary location)
-    set(CMAKE_MACOSX_RPATH TRUE)
-    set(CMAKE_SKIP_BUILD_RPATH FALSE)
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-    set(CMAKE_INSTALL_NAME_DIR "@rpath/")
-    SET(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
 
-    # module_origin_path is the location of the binary
-    if(MACOS)
-        set(module_origin_path "@loader_path/")
-    else()
-        set(module_origin_path "\$ORIGIN")
-    endif()
+    include_directories("/usr/local/include")
+
+    SET(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
 endif()
 
 
@@ -205,6 +193,10 @@ set (SOURCE_FILES
     ${T_CPP_SRC}/src/utils.cpp
     )
 
+set (TEST_FILES
+    ${T_CPP_SRC}/test/test_base.cpp
+    )
+
 add_library(tributary SHARED ${SOURCE_FILES})
 
 if(T_CPP_BUILD_STRICT AND NOT WIN32)
@@ -214,4 +206,17 @@ elseif(WIN32)
     target_compile_definitions(tributary PRIVATE T_EXPORTS=1)
     target_compile_definitions(tributary PRIVATE WIN32=1)
     target_compile_definitions(tributary PRIVATE _WIN32=1)
+endif()
+
+if(T_CPP_TESTS)
+    t_build_dep("gtest" "${T_CMAKE_MODULE_PATH}/gtest.txt.in")
+
+    include(GoogleTest)
+    enable_testing()
+
+    add_executable(tests ${TEST_FILES})
+    target_link_libraries(tests gtest_main)
+    target_link_libraries(tests tributary)
+    
+    gtest_discover_tests(tests)
 endif()
