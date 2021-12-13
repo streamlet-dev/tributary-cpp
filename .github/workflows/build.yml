@@ -35,12 +35,16 @@ jobs:
 
     - name: Install System Dependencies (Mac)
       run: |
-        make tests
+        brew install boost
       if: ${{ matrix.os == 'macos-latest' }}
 
     - name: Install System Dependencies (Linux)
       run: |
-        make tests
+        wget https://boostorg.jfrog.io/artifactory/main/release/1.71.0/source/boost_1_71_0.tar.gz >/dev/null 2>&1
+        tar xfz boost_1_71_0.tar.gz
+        cd boost_1_71_0
+        ./bootstrap.sh
+        ./b2 -j8 --with-algorithm --with-system install
       if: ${{ matrix.os == 'ubuntu-latest' }}
 
     - name: Build
