@@ -14,18 +14,18 @@ std::function<int()> generator = []{
 
 TEST(StreamingTest, Instantiation) {
     EXPECT_NO_THROW({
-        Node n;
+        Node<int> n;
         std::cout << n << std::endl;
     });
 
     EXPECT_NO_THROW({
-        Node n(generator);
+        Node<int> n(generator);
         std::cout << n << std::endl;
     });
 }
 
 TEST(StreamingTest, Generator) {
-    Node n(generator);
+    Node<int> n(generator);
     EXPECT_EQ(n(), 0);
     EXPECT_EQ(n(), 1);
     EXPECT_EQ(n(), 2);
