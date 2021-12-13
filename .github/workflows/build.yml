@@ -54,6 +54,11 @@ jobs:
         cmake --build build/ --target all -- -j2
       if: ${{ matrix.os != 'windows-latest' }}
 
+    - name: Lint
+      run: |
+        ./scripts/lint.sh
+      if: ${{ matrix.os == 'macos-latest' }}
+
     - name: Build
       run: |
         mkdir build
@@ -65,3 +70,4 @@ jobs:
       run: |
         cd build
         ctest
+      if: ${{ matrix.os == 'ubuntu-latest' }}
