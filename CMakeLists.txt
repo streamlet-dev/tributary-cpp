@@ -139,6 +139,7 @@ elseif(WIN32)
 endif()
 
 if(WIN32)
+    add_definitions(-DBOOST_UUID_FORCE_AUTO_LINK)
     if(CMAKE_BUILD_TYPE_LOWER STREQUAL debug)
         set(OPT_FLAGS " \
             /DEBUG \
