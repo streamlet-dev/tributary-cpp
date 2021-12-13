@@ -28,9 +28,9 @@ jobs:
           set VCPKG_PLATFORM_TOOLSET=v142
           git clone https://github.com/Microsoft/vcpkg
           cd vcpkg
-          call bootstrap-vcpkg.bat
-          call vcpkg.exe install boost-algorithm boost-system
-          call vcpkg.exe integrate install
+          .\bootstrap-vcpkg.bat
+          .\vcpkg.exe install boost-algorithm boost-system
+          .\vcpkg.exe integrate install
       if: ${{ matrix.os == 'windows-latest' }}
 
     - name: Install System Dependencies (Mac)
