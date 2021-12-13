@@ -46,7 +46,6 @@ jobs:
         cd boost_1_71_0
         ./bootstrap.sh
         sudo ./b2 -j8 --with-system install
-        sudo apt-get install libgtest-dev
       if: ${{ matrix.os == 'ubuntu-latest' }}
 
     - name: Lint
