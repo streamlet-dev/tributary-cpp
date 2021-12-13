@@ -50,14 +50,14 @@ jobs:
     - name: Build
       run: |
         mkdir build
-        cmake -Bbuild -H.
+        cmake -Bbuild .
         cmake --build build/ --target all -- -j2
       if: ${{ matrix.os != 'windows-latest' }}
 
     - name: Build
       run: |
         mkdir build
-        cmake -Bbuild -H. -A x64 -DCMAKE_TOOLCHAIN_FILE=vcpkg\\scripts\\buildsystems\\vcpkg.cmake
+        cmake -Bbuild -A x64 -DCMAKE_TOOLCHAIN_FILE=vcpkg\\scripts\\buildsystems\\vcpkg.cmake
         cmake --build build/ --target all -- /m:2 /p:Configuration=release 
       if: ${{ matrix.os == 'windows-latest' }}
 
