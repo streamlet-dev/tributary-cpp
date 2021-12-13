@@ -121,7 +121,7 @@ else()
     message("${Cyan}Building RELEASE${ColorReset}")
 endif()
 
-include_directories("${CMAKE_SOURCE_DIR}/src/include")
+include_directories("${CMAKE_SOURCE_DIR}/include")
 
 # Boost is a system dependency and must be present and built on the system.
 find_package(Boost REQUIRED)
@@ -199,7 +199,10 @@ set(CMAKE_C_FLAGS " \
 t_build_dep("exprtk" "${T_CMAKE_MODULE_PATH}/exprtk.txt.in")
 
 set (SOURCE_FILES
-    ${T_CPP_SRC}/src/cpp/base.cpp
+    ${T_CPP_SRC}/src/base.cpp
+    ${T_CPP_SRC}/src/lazy.cpp
+    ${T_CPP_SRC}/src/streaming.cpp
+    ${T_CPP_SRC}/src/utils.cpp
     )
 
 add_library(tributary SHARED ${SOURCE_FILES})
