@@ -36,7 +36,7 @@ jobs:
 
     - name: Install System Dependencies (Mac)
       run: |
-        brew install boost clang-format
+        brew install boost clang-format googletest
       if: ${{ matrix.os == 'macos-latest' }}
 
     - name: Install System Dependencies (Linux)
@@ -46,6 +46,7 @@ jobs:
         cd boost_1_71_0
         ./bootstrap.sh
         sudo ./b2 -j8 --with-system install
+        sudo apt-get install libgtest-dev
       if: ${{ matrix.os == 'ubuntu-latest' }}
 
     - name: Lint
