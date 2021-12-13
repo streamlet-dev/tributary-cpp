@@ -193,10 +193,6 @@ set (SOURCE_FILES
     ${T_CPP_SRC}/src/utils.cpp
     )
 
-set (TEST_FILES
-    ${T_CPP_SRC}/test/test_base.cpp
-    )
-
 add_library(tributary SHARED ${SOURCE_FILES})
 
 if(T_CPP_BUILD_STRICT AND NOT WIN32)
@@ -214,9 +210,17 @@ if(T_CPP_TESTS)
     include(GoogleTest)
     enable_testing()
 
-    add_executable(tests ${TEST_FILES})
-    target_link_libraries(tests gtest_main)
-    target_link_libraries(tests tributary)
+    add_executable(test_base ${T_CPP_SRC}/test/test_base.cpp)
+    add_executable(test_streaming ${T_CPP_SRC}/test/test_streaming.cpp)
+    add_executable(test_lazy ${T_CPP_SRC}/test/test_lazy.cpp)
+    target_link_libraries(test_base gtest_main)
+    target_link_libraries(test_lazy gtest_main)
+    target_link_libraries(test_streaming gtest_main)
+    target_link_libraries(test_base tributary)
+    target_link_libraries(test_lazy tributary)
+    target_link_libraries(test_streaming tributary)
     
-    gtest_discover_tests(tests)
+    gtest_discover_tests(test_base)
+    gtest_discover_tests(test_lazy)
+    gtest_discover_tests(test_streaming)
 endif()

@@ -2,6 +2,5 @@
 
 class LazyNode {
 public:
-
 private:
 };
