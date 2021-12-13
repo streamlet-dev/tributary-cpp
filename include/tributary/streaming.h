@@ -11,7 +11,7 @@ namespace tributary {
 namespace streaming {
 
 template <typename Ret, typename... Args>
-class T_EXPORT Node {
+class Node {
   typedef std::function<Ret(Args&...)> FuncArg;
 
 public:
@@ -37,7 +37,7 @@ public:
     return uuid;
   };
 
-  friend T_EXPORT std::ostream&
+  friend std::ostream&
   operator<<(std::ostream& ostream, const Node<Ret, Args&...>& node) {
     ostream << node.name << "[" << node.id.substr(0, 6) << "]";
     return ostream;

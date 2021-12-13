@@ -207,9 +207,9 @@ elseif(WIN32)
 endif()
 
 if(T_CPP_TESTS)
-    include(GoogleTest)
     find_package(GTest REQUIRED)
-
+    message(${GTEST_INCLUDE_DIR})
+    include_directories(${GTEST_INCLUDE_DIRS})
     enable_testing()
 
     # add_executable(test_base ${T_CPP_SRC}/test/test_base.cpp)
@@ -228,8 +228,8 @@ if(T_CPP_TESTS)
     # target_link_libraries(test_base PRIVATE GTest::Main)
     # target_link_libraries(test_lazy PRIVATE GTest::Main)
  
-    target_link_libraries(test_streaming GTest::Main)
-    target_link_libraries(test_streaming tributary)
+    # target_link_libraries(test_streaming PRIVATE GTest::Main tributary)
+    target_link_libraries(test_streaming PRIVATE GTest::Main)
     
     # gtest_discover_tests(test_base)
     # gtest_discover_tests(test_lazy)

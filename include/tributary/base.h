@@ -1,6 +1,5 @@
 #pragma once
 
-
 #ifdef WIN32
 #ifdef T_EXPORTS
 #define T_EXPORT __declspec(dllexport)

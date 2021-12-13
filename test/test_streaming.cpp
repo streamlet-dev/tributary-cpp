@@ -18,16 +18,16 @@ TEST(StreamingTest, Instantiation) {
         std::cout << n << std::endl;
     });
 
-    // EXPECT_NO_THROW({
-    //     Node<int> n(generator);
-    //     std::cout << n << std::endl;
-    // });
+    EXPECT_NO_THROW({
+        Node<int> n(generator);
+        std::cout << n << std::endl;
+    });
 }
 
-// TEST(StreamingTest, Generator) {
-//     Node<int> n(generator);
-//     EXPECT_EQ(n(), 0);
-//     EXPECT_EQ(n(), 1);
-//     EXPECT_EQ(n(), 2);
-//     EXPECT_EQ(n(), 3);
-// }
+TEST(StreamingTest, Generator) {
+    Node<int> n(generator);
+    EXPECT_EQ(n(), 0);
+    EXPECT_EQ(n(), 1);
+    EXPECT_EQ(n(), 2);
+    EXPECT_EQ(n(), 3);
+}
