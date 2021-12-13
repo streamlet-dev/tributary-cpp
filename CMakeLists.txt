@@ -113,7 +113,6 @@ else()
 endif()
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWER )
-message(${CMAKE_BUILD_TYPE_LOWER})
 if(CMAKE_BUILD_TYPE_LOWER STREQUAL debug)
     message("${Red}Building DEBUG${ColorReset}")
     add_definitions(-DT_DEBUG)
