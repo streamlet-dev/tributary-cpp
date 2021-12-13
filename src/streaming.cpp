@@ -29,7 +29,6 @@ namespace streaming {
 //   return ostream;
 // }
 
-
 // std::string
 // Node::generateUUID() {
 //   static boost::uuids::random_generator generator;
