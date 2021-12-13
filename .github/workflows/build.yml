@@ -24,14 +24,15 @@ jobs:
 
     - name: Install System Dependencies (Windows)
       run: |
-          set VCPKG_DEFAULT_TRIPLET=x64-windows
-          set VCPKG_PLATFORM_TOOLSET=v142
           git clone https://github.com/Microsoft/vcpkg
           cd vcpkg
           .\bootstrap-vcpkg.bat
           .\vcpkg.exe install boost-algorithm boost-system
           .\vcpkg.exe integrate install
       if: ${{ matrix.os == 'windows-latest' }}
+      env:
+        VCPKG_DEFAULT_TRIPLET: x64-windows
+        VCPKG_PLATFORM_TOOLSET: v142
 
     - name: Install System Dependencies (Mac)
       run: |
