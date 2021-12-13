@@ -18,7 +18,6 @@ namespace streaming {
 //   return uuid;
 // }
 
-
 // template <typename Ret, typename ...Args>
 // std::ostream&
 // operator<<(std::ostream& ostream, const Node<Ret, Args&...>& node) {

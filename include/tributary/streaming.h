@@ -9,8 +9,7 @@
 namespace tributary {
 namespace streaming {
 
-
-template <typename Ret, typename ...Args>
+template <typename Ret, typename... Args>
 class Node {
   typedef std::function<Ret(Args&...)> FuncArg;
 
@@ -25,16 +24,20 @@ public:
     , name("Node")
     , id(Node::generateUUID()) {}
 
-  int operator()() { return func();}
-  static std::string generateUUID() {
+  int
+  operator()() {
+    return func();
+  }
+  static std::string
+  generateUUID() {
     static boost::uuids::random_generator generator;
     std::string uuid = boost::uuids::to_string(generator());
     boost::replace_all(uuid, "-", "");
     return uuid;
-
   };
 
-  friend std::ostream& operator<<(std::ostream& ostream, const Node<Ret, Args&...>& node) {
+  friend std::ostream&
+  operator<<(std::ostream& ostream, const Node<Ret, Args&...>& node) {
     ostream << node.name << "[" << node.id.substr(0, 6) << "]";
     return ostream;
   }
