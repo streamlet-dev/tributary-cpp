@@ -5,13 +5,21 @@
 namespace tributary {
 namespace streaming {
 
+typedef std::function<int(void)> FuncArg;
+
 class Node {
 public:
-  Node()
-    : func([&](int var) { return var; })
+  Node(FuncArg& func)
+    : func(func)
     , name("Node")
     , id(Node::generateUUID()) {}
 
+  Node()
+    : func([&]() { return 1; })
+    , name("Node")
+    , id(Node::generateUUID()) {}
+
+  int operator()() { return func();}
   static std::string generateUUID();
 
   friend std::ostream& operator<<(std::ostream& ostream, const Node& node);
@@ -19,7 +27,7 @@ public:
 private:
   std::string name;
   std::string id;
-  std::function<int(int)> func;
+  FuncArg func;
 };
 
 } // namespace streaming
