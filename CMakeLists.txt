@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.7.2)
 project(tributary)
 include(CheckCCompilerFlag)
 
-set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 
 if(NOT DEFINED T_CMAKE_MODULE_PATH)
     set(T_CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
@@ -88,7 +88,6 @@ endfunction()
 #######################
 find_package(Color)
 
-option(CMAKE_BUILD_TYPE "Release/Debug build" RELEASE)
 option(T_CPP_BUILD_STRICT "Build the C++ with strict warnings" OFF)
 option(T_CPP_TESTS "Build the C++ tests" ON)
 
@@ -114,6 +113,7 @@ else()
 endif()
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWER )
+message(${CMAKE_BUILD_TYPE_LOWER})
 if(CMAKE_BUILD_TYPE_LOWER STREQUAL debug)
     message("${Red}Building DEBUG${ColorReset}")
     add_definitions(-DT_DEBUG)
@@ -135,6 +135,8 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++1y")
+elseif(WIN32)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std=c++17")
 endif()
 
 if(WIN32)
@@ -142,7 +144,7 @@ if(WIN32)
         set(OPT_FLAGS " \
             /DEBUG \
             /Z7 \
-            /Zi
+            /Zi \
             ")
     else()
         set(OPT_FLAGS " \
@@ -205,22 +207,31 @@ elseif(WIN32)
 endif()
 
 if(T_CPP_TESTS)
-    t_build_dep("gtest" "${T_CMAKE_MODULE_PATH}/gtest.txt.in")
-
     include(GoogleTest)
+    find_package(GTest REQUIRED)
+
     enable_testing()
 
-    add_executable(test_base ${T_CPP_SRC}/test/test_base.cpp)
+    # add_executable(test_base ${T_CPP_SRC}/test/test_base.cpp)
+    # add_executable(test_lazy ${T_CPP_SRC}/test/test_lazy.cpp)
     add_executable(test_streaming ${T_CPP_SRC}/test/test_streaming.cpp)
-    add_executable(test_lazy ${T_CPP_SRC}/test/test_lazy.cpp)
-    target_link_libraries(test_base gtest_main)
-    target_link_libraries(test_lazy gtest_main)
-    target_link_libraries(test_streaming gtest_main)
-    target_link_libraries(test_base tributary)
-    target_link_libraries(test_lazy tributary)
+
+    if (WIN32)
+        # target_compile_definitions(test_base PRIVATE WIN32=1)
+        # target_compile_definitions(test_base PRIVATE _WIN32=1)
+        # target_compile_definitions(test_lazy PRIVATE WIN32=1)
+        # target_compile_definitions(test_lazy PRIVATE _WIN32=1)
+        target_compile_definitions(test_streaming PRIVATE WIN32=1)
+        target_compile_definitions(test_streaming PRIVATE _WIN32=1)
+    endif()
+
+    # target_link_libraries(test_base PRIVATE GTest::Main)
+    # target_link_libraries(test_lazy PRIVATE GTest::Main)
+ 
+    target_link_libraries(test_streaming GTest::Main)
     target_link_libraries(test_streaming tributary)
     
-    gtest_discover_tests(test_base)
-    gtest_discover_tests(test_lazy)
+    # gtest_discover_tests(test_base)
+    # gtest_discover_tests(test_lazy)
     gtest_discover_tests(test_streaming)
 endif()

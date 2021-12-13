@@ -5,12 +5,13 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <tributary/base.h>
 
 namespace tributary {
 namespace streaming {
 
 template <typename Ret, typename... Args>
-class Node {
+class T_EXPORT Node {
   typedef std::function<Ret(Args&...)> FuncArg;
 
 public:
@@ -36,7 +37,7 @@ public:
     return uuid;
   };
 
-  friend std::ostream&
+  friend T_EXPORT std::ostream&
   operator<<(std::ostream& ostream, const Node<Ret, Args&...>& node) {
     ostream << node.name << "[" << node.id.substr(0, 6) << "]";
     return ostream;

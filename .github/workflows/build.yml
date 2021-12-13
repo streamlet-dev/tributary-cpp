@@ -27,7 +27,7 @@ jobs:
           git clone https://github.com/Microsoft/vcpkg
           cd vcpkg
           .\bootstrap-vcpkg.bat
-          .\vcpkg.exe install boost-algorithm boost-system boost-uuid
+          .\vcpkg.exe install boost-algorithm boost-system boost-uuid gtest
           .\vcpkg.exe integrate install
       if: ${{ matrix.os == 'windows-latest' }}
       env:
@@ -63,8 +63,8 @@ jobs:
     - name: Build
       run: |
         mkdir build
-        cmake -B build -A x64 -DCMAKE_TOOLCHAIN_FILE="vcpkg\scripts\buildsystems\vcpkg.cmake"
-        cmake --build build -- /m:2 /p:Configuration=release 
+        cmake -B build -A x64 -DCMAKE_TOOLCHAIN_FILE="vcpkg\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE=Debug
+        cmake --build build --config Debug -- /m:2
       if: ${{ matrix.os == 'windows-latest' }}
 
     - name: Test
