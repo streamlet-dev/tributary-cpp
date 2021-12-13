@@ -60,13 +60,3 @@ jobs:
         cmake -B build -A x64 -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake
         cmake --build build --target all -- /m:2 /p:Configuration=release 
       if: ${{ matrix.os == 'windows-latest' }}
-
-    # - name: Lint
-    #   run: |
-    #     make lint
-
-    # - name: Test
-    #   run: |
-    #     make tests
-    #   if: ${{ github.event_name == matrix.event-name || matrix.os == 'ubuntu-latest' }}
-
