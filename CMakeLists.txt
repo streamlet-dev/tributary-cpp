@@ -206,9 +206,9 @@ elseif(WIN32)
 endif()
 
 if(T_CPP_TESTS)
-    if(NOT WIN32)
-        t_build_dep("gtest" "${T_CMAKE_MODULE_PATH}/gtest.txt.in")
-    endif()
+    # if(NOT WIN32)
+    #     t_build_dep("gtest" "${T_CMAKE_MODULE_PATH}/gtest.txt.in")
+    # endif()
 
     find_package(GTest REQUIRED)
     include_directories(${GTEST_INCLUDE_DIRS})
