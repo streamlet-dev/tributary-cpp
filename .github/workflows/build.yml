@@ -22,11 +22,40 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install System Dependencies (Windows)
+      run: |
+          set VCPKG_DEFAULT_TRIPLET=x64-windows
+          set VCPKG_PLATFORM_TOOLSET=v142
+          git clone https://github.com/Microsoft/vcpkg
+          cd vcpkg
+          call bootstrap-vcpkg.bat
+          call vcpkg.exe install boost-algorithm boost-system
+          call vcpkg.exe integrate install
+      if: ${{ matrix.os == 'windows-latest' }}
+
+    - name: Install System Dependencies (Mac)
+      run: |
+        make tests
+      if: ${{ matrix.os == 'macos-latest' }}
+
+    - name: Install System Dependencies (Linux)
+      run: |
+        make tests
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+
     - name: Build
       run: |
         mkdir build
         cmake -Bbuild -H.
-        cmake --build build/ --target all
+        cmake --build build/ --target all -- -j2
+      if: ${{ matrix.os != 'windows-latest' }}
+
+    - name: Build
+      run: |
+        mkdir build
+        cmake -Bbuild -H. -A x64 -DCMAKE_TOOLCHAIN_FILE=vcpkg\\scripts\\buildsystems\\vcpkg.cmake
+        cmake --build build/ --target all -- /m:2 /p:Configuration=release 
+      if: ${{ matrix.os == 'windows-latest' }}
 
     # - name: Lint
     #   run: |
