@@ -8,12 +8,13 @@
 namespace tributary {
 namespace utils {
 
-T_EXPORT std::string generateUUID() {
+T_EXPORT std::string
+generateUUID() {
   static boost::uuids::random_generator uuidGenerator;
   std::string uuid = boost::uuids::to_string(uuidGenerator());
   boost::replace_all(uuid, "-", "");
   return uuid;
 };
 
-}
-}
+} // namespace utils
+} // namespace tributary

@@ -17,21 +17,24 @@ static auto _defaultFunction = []() { return 1; };
 template <typename Function, typename... Args>
 class Node {
 public:
-  Node(Function _function, Args... _args )
+  Node(Function _function, Args... _args)
     : function(std::bind(_function, std::forward<Args>(_args)...))
     , name("Node")
     , id(generateUUID()) {}
 
-  auto operator()() { return function(); }
+  auto
+  operator()() {
+    return function();
+  }
   // auto getName() const {return name;}
   // auto getId() const {return id;}
 
-  friend T_EXPORT std::ostream& operator<<(std::ostream& ostream, const Node<Function, Args...>& node) {
+  friend T_EXPORT std::ostream&
+  operator<<(std::ostream& ostream, const Node<Function, Args...>& node) {
     // ostream << node.getName() << "[" << node.getId().substr(0, 6) << "]";
     ostream << node.name << "[" << node.id.substr(0, 6) << "]";
     return ostream;
   }
-
 
 protected:
   std::string name;
@@ -43,18 +46,17 @@ private:
 };
 
 template <typename T>
-class Const : public Node<std::function<T()> > {
+class Const : public Node<std::function<T()>> {
 public:
-  Const(T _value) 
-  : Node<std::function<T()> >([&]() { return value; })
-  , value(_value) {
+  Const(T _value)
+    : Node<std::function<T()>>([&]() { return value; })
+    , value(_value) {
     this->name = "Const";
   }
 
 private:
   T value;
 };
-
 
 } // namespace streaming
 } // namespace tributary
