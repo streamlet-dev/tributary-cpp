@@ -1,52 +1,49 @@
 #pragma once
+#include <any>
 #include <functional>
 #include <iostream>
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
 #include <tributary/base.h>
+#include <tributary/utils.h>
 
 namespace tributary {
 namespace streaming {
 
-template <typename Ret, typename... Args>
-class Node {
-  typedef std::function<Ret(Args&...)> FuncArg;
+using namespace tributary::utils;
 
+// auto _defaultFunction = [&]() { return 1; }
+static auto _defaultFunction = []() { return 1; };
+
+// https://stackoverflow.com/questions/57037888/how-to-store-any-kind-of-function-in-a-variable-in-c
+template <typename Function, typename... Args>
+class Node {
 public:
-  Node(FuncArg& func)
-    : func(func)
-    , name("Node")
-    , id(Node::generateUUID()) {}
 
   Node()
-    : func([&]() { return 1; })
+    : function(_defaultFunction)
     , name("Node")
-    , id(Node::generateUUID()) {}
+    , id(generateUUID()) {}
 
-  int
-  operator()() {
-    return func();
-  }
-  static std::string
-  generateUUID() {
-    static boost::uuids::random_generator generator;
-    std::string uuid = boost::uuids::to_string(generator());
-    boost::replace_all(uuid, "-", "");
-    return uuid;
-  };
+  Node(Function _function, Args... _args )
+    : function(std::bind(_function, std::forward<Args>(_args)...))
+    , name("Node")
+    , id(generateUUID()) {}
 
-  friend std::ostream&
-  operator<<(std::ostream& ostream, const Node<Ret, Args&...>& node) {
+  auto operator()() { return function(); }
+  // auto getName() const {return name;}
+  // auto getId() const {return id;}
+
+  friend T_EXPORT std::ostream& operator<<(std::ostream& ostream, const Node<Function, Args...>& node) {
+    // ostream << node.getName() << "[" << node.getId().substr(0, 6) << "]";
     ostream << node.name << "[" << node.id.substr(0, 6) << "]";
     return ostream;
   }
 
+
 private:
   std::string name;
   std::string id;
-  FuncArg func;
+  using ReturnType = std::invoke_result_t<Function, Args...>;
+  std::function<ReturnType()> function;
 };
 
 } // namespace streaming

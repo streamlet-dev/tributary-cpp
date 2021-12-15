@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.7.2)
 project(tributary)
 include(CheckCCompilerFlag)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
@@ -232,7 +232,7 @@ if(T_CPP_TESTS)
     # target_link_libraries(test_lazy PRIVATE GTest::Main)
  
     # target_link_libraries(test_streaming PRIVATE GTest::Main tributary)
-    target_link_libraries(test_streaming PRIVATE GTest::Main)
+    target_link_libraries(test_streaming PRIVATE GTest::Main tributary)
     
     # gtest_discover_tests(test_base)
     # gtest_discover_tests(test_lazy)
