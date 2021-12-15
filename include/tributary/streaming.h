@@ -17,12 +17,6 @@ static auto _defaultFunction = []() { return 1; };
 template <typename Function, typename... Args>
 class Node {
 public:
-
-  Node()
-    : function(_defaultFunction)
-    , name("Node")
-    , id(generateUUID()) {}
-
   Node(Function _function, Args... _args )
     : function(std::bind(_function, std::forward<Args>(_args)...))
     , name("Node")
@@ -39,12 +33,28 @@ public:
   }
 
 
-private:
+protected:
   std::string name;
   std::string id;
+
+private:
   using ReturnType = std::invoke_result_t<Function, Args...>;
   std::function<ReturnType()> function;
 };
+
+template <typename T>
+class Const : public Node<std::function<T()> > {
+public:
+  Const(T _value) 
+  : Node<std::function<T()> >([&]() { return value; })
+  , value(_value) {
+    this->name = "Const";
+  }
+
+private:
+  T value;
+};
+
 
 } // namespace streaming
 } // namespace tributary

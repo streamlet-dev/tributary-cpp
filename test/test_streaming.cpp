@@ -36,3 +36,9 @@ TEST(StreamingTest, Generator) {
     EXPECT_EQ(n2(), 7);
     EXPECT_EQ(n2(), 8);
 }
+
+TEST(StreamingTest, Const) {
+    Const c(5);
+    EXPECT_EQ(c(), 5);
+    EXPECT_EQ(c(), 5);
+}
