@@ -18,9 +18,8 @@ static std::function<int()> generator = [] {
 
 static std::function<std::future<int>()> asyncGenerator = [] {
   int i = 0;
-  return [=]() mutable { return std::async(std::launch::async, [=]() mutable -> int {  return i < 10 ? i++ : -1; }); };
+  return [=]() mutable { return std::async(std::launch::async, [=]() mutable -> int { return i < 10 ? i++ : -1; }); };
 }();
-
 
 T_EXPORT cppcoro::task<int> asyncGeneratorCoro();
 
@@ -32,44 +31,48 @@ addTo(int x) {
 
 T_EXPORT std::string generateUUID();
 
-
 class T_EXPORT BaseNode {
 protected:
-  BaseNode()=default;
+  BaseNode() = default;
 };
 
 class T_EXPORT StreamNone : public BaseNode {
 public:
-  StreamNone& inst() {
+  StreamNone&
+  inst() {
     static StreamNone inst;
     return inst;
   }
-private:
-  StreamNone()=default;
-  ~StreamNone()=default;
-};
 
+private:
+  StreamNone() = default;
+  ~StreamNone() = default;
+};
 
 class T_EXPORT StreamBegin : public BaseNode {
 public:
-  StreamBegin& inst() {
+  StreamBegin&
+  inst() {
     static StreamBegin inst;
     return inst;
   }
+
 private:
-  StreamBegin()=default;
-  ~StreamBegin()=default;
+  StreamBegin() = default;
+  ~StreamBegin() = default;
 };
 
 class T_EXPORT StreamEnd : public BaseNode {
 public:
-  StreamEnd& inst() {
+  StreamEnd&
+  inst() {
     static StreamEnd inst;
     return inst;
   }
+
 private:
-  StreamEnd()=default;
-  ~StreamEnd()=default;
+  StreamEnd() = default;
+  ~StreamEnd() = default;
 };
 
 } // namespace utils
