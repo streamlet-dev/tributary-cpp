@@ -44,14 +44,11 @@ protected:
   // std::function<std::invoke_result_t<Function, Args...>()> function;
 };
 
-template <typename... Ts>
-class FunctionArgs : std::tuple<Ts...> {};
-
 template <typename Function, typename... Args>
 class Foo : public Node<Function, Args...> {
 public:
   template<typename... Ts>
-  Foo(Function _function, FunctionArgs<Ts...> functionArgs) 
+  Foo(Function _function, std::tuple<Ts...> functionArgs) 
   : Node<Function, Args...>(std::bind(_function, functionArgs)) {}
 protected:
 };
