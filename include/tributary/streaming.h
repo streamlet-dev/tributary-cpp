@@ -24,7 +24,8 @@ public:
 
   auto
   operator()(Args... _args) {
-    // std::function<std::invoke_result_t<Function, Args...>()> mappedFunction = dynamic_cast<std::function<std::invoke_result_t<Function, Args...>()>>(function);
+    // std::function<std::invoke_result_t<Function, Args...>()> mappedFunction = dynamic_cast<std::function<std::invoke_result_t<Function,
+    // Args...>()>>(function);
     return function(std::forward<Args>(_args)...);
   }
   // auto getName() const {return name;}
@@ -47,12 +48,12 @@ protected:
 template <typename Function, typename... Args>
 class Foo : public Node<Function, Args...> {
 public:
-  template<typename... Ts>
-  Foo(Function _function, std::tuple<Ts...> functionArgs) 
-  : Node<Function, Args...>(std::bind(_function, functionArgs)) {}
+  template <typename... Ts>
+  Foo(Function _function, std::tuple<Ts...> functionArgs)
+    : Node<Function, Args...>(std::bind(_function, functionArgs)) {}
+
 protected:
 };
-
 
 namespace input {
 
@@ -88,7 +89,6 @@ public:
 private:
   std::string text;
 };
-
 
 } // namespace output
 
