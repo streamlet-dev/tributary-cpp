@@ -20,5 +20,45 @@ addTo(int x) {
 
 T_EXPORT std::string generateUUID();
 
+
+class T_EXPORT BaseNode {
+protected:
+  BaseNode()=default;
+};
+
+class T_EXPORT StreamNone : public BaseNode {
+public:
+  StreamNone& inst() {
+    static StreamNone inst;
+    return inst;
+  }
+private:
+  StreamNone()=default;
+  ~StreamNone()=default;
+};
+
+
+class T_EXPORT StreamBegin : public BaseNode {
+public:
+  StreamBegin& inst() {
+    static StreamBegin inst;
+    return inst;
+  }
+private:
+  StreamBegin()=default;
+  ~StreamBegin()=default;
+};
+
+class T_EXPORT StreamEnd : public BaseNode {
+public:
+  StreamEnd& inst() {
+    static StreamEnd inst;
+    return inst;
+  }
+private:
+  StreamEnd()=default;
+  ~StreamEnd()=default;
+};
+
 } // namespace utils
 } // namespace tributary

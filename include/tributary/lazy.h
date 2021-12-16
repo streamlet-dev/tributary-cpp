@@ -1,6 +1,11 @@
 #pragma once
+#include <tributary/base.h>
+#include <tributary/lazy/node.h>
 
-class LazyNode {
-public:
-private:
-};
+namespace tributary {
+namespace lazy {
+
+T_EXPORT int lazyExportCheck();
+
+} // namespace lazy
+} // namespace tributary

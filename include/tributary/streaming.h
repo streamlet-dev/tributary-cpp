@@ -1,8 +1,5 @@
 #pragma once
-#include <any>
-#include <functional>
-#include <iostream>
-#include <string>
+#include <tributary/base.h>
 #include <tributary/streaming/node.h>
 #include <tributary/streaming/input.h>
 #include <tributary/streaming/output.h>
