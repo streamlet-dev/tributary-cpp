@@ -17,14 +17,15 @@ static auto _defaultFunction = []() { return 1; };
 template <typename Function, typename... Args>
 class Node {
 public:
-  Node(Function _function, Args... _args)
-    : function(std::bind(_function, std::forward<Args>(_args)...))
+  Node(Function _function)
+    : function(_function)
     , name("Node")
     , id(generateUUID()) {}
 
   auto
-  operator()() {
-    return function();
+  operator()(Args... _args) {
+    // std::function<std::invoke_result_t<Function, Args...>()> mappedFunction = dynamic_cast<std::function<std::invoke_result_t<Function, Args...>()>>(function);
+    return function(std::forward<Args>(_args)...);
   }
   // auto getName() const {return name;}
   // auto getId() const {return id;}
@@ -39,8 +40,21 @@ public:
 protected:
   std::string name;
   std::string id;
-  std::function<std::invoke_result_t<Function, Args...>()> function;
+  std::function<std::invoke_result_t<Function, Args...>(Args...)> function;
+  // std::function<std::invoke_result_t<Function, Args...>()> function;
 };
+
+// template <typename... Ts>
+// class FunctionArgs : std::tuple<Ts...> {};
+
+template <typename Function, class FunctionArgs, typename... Args>
+class Foo : public Node<Function, Args...> {
+public:
+  Foo(Function _function, FunctionArgs functionArgs) 
+  : Node<Function, Args...>(std::bind(_function, functionArgs)) {}
+protected:
+};
+
 
 namespace input {
 
@@ -62,10 +76,10 @@ private:
 namespace output {
 
 // template <typename T>
-// class Print : public Node<std::function<T(T)>> {
+// class Print : public Node<std::function<T(T)>, T> {
 // public:
 //   Print(std::string _text = "")
-//     : Node<std::function<T(T)>>([&](T value) -> T {
+//     : Node<std::function<T(T)>, T>([=](T value) -> T {
 //       std::cout << text << value << std::endl;
 //       return value;
 //     })
@@ -73,34 +87,26 @@ namespace output {
 //     this->name = "Print";
 //   }
 
-//   T operator()(T input) {
-//     return function(input);
-//   }
-
 // private:
 //   std::string text;
 // };
 
 
 
-// class Print : public Node<std::function<int(int)>, int> {
-// public:
-//   Print(std::string _text = "")
-//     : Node<std::function<int(int)>, int>([&](int value) -> int {
-//       std::cout << text << value << std::endl;
-//       return value;
-//     }, 5)
-//     , text(_text) {
-//     this->name = "Print";
-//   }
+class Print : public Node<std::function<int(int)>, int> {
+public:
+  Print(std::string _text = "")
+    : Node<std::function<int(int)>, int>([&](int value) -> int {
+      std::cout << text << value << std::endl;
+      return value;
+    })
+    , text(_text) {
+    this->name = "Print";
+  }
 
-//   // int operator()(int input) {
-//   //   return function(input);
-//   // }
-
-// private:
-//   std::string text;
-// };
+private:
+  std::string text;
+};
 
 } // namespace output
 
