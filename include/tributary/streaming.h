@@ -39,11 +39,10 @@ public:
 protected:
   std::string name;
   std::string id;
-
-private:
-  using ReturnType = std::invoke_result_t<Function, Args...>;
-  std::function<ReturnType()> function;
+  std::function<std::invoke_result_t<Function, Args...>()> function;
 };
+
+namespace input {
 
 template <typename T>
 class Const : public Node<std::function<T()>> {
@@ -57,6 +56,53 @@ public:
 private:
   T value;
 };
+
+} // namespace input
+
+namespace output {
+
+// template <typename T>
+// class Print : public Node<std::function<T(T)>> {
+// public:
+//   Print(std::string _text = "")
+//     : Node<std::function<T(T)>>([&](T value) -> T {
+//       std::cout << text << value << std::endl;
+//       return value;
+//     })
+//     , text(_text) {
+//     this->name = "Print";
+//   }
+
+//   T operator()(T input) {
+//     return function(input);
+//   }
+
+// private:
+//   std::string text;
+// };
+
+
+
+// class Print : public Node<std::function<int(int)>, int> {
+// public:
+//   Print(std::string _text = "")
+//     : Node<std::function<int(int)>, int>([&](int value) -> int {
+//       std::cout << text << value << std::endl;
+//       return value;
+//     }, 5)
+//     , text(_text) {
+//     this->name = "Print";
+//   }
+
+//   // int operator()(int input) {
+//   //   return function(input);
+//   // }
+
+// private:
+//   std::string text;
+// };
+
+} // namespace output
 
 } // namespace streaming
 } // namespace tributary

@@ -38,7 +38,12 @@ TEST(StreamingTest, Generator) {
 }
 
 TEST(StreamingTest, Const) {
-    Const c(5);
+    input::Const c(5);
     EXPECT_EQ(c(), 5);
     EXPECT_EQ(c(), 5);
 }
+
+
+// TEST(StreamingTest, Print) {
+//     output::Print<int> p("output:");
+// }
