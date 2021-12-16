@@ -75,28 +75,11 @@ private:
 
 namespace output {
 
-// template <typename T>
-// class Print : public Node<std::function<T(T)>, T> {
-// public:
-//   Print(std::string _text = "")
-//     : Node<std::function<T(T)>, T>([=](T value) -> T {
-//       std::cout << text << value << std::endl;
-//       return value;
-//     })
-//     , text(_text) {
-//     this->name = "Print";
-//   }
-
-// private:
-//   std::string text;
-// };
-
-
-
-class Print : public Node<std::function<int(int)>, int> {
+template <typename T>
+class Print : public Node<std::function<T(T)>, T> {
 public:
   Print(std::string _text = "")
-    : Node<std::function<int(int)>, int>([&](int value) -> int {
+    : Node<std::function<T(T)>, T>([=](T value) -> T {
       std::cout << text << value << std::endl;
       return value;
     })
@@ -107,6 +90,7 @@ public:
 private:
   std::string text;
 };
+
 
 } // namespace output
 

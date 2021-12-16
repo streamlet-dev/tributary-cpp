@@ -45,6 +45,6 @@ TEST(StreamingTest, Const) {
 
 
 TEST(StreamingTest, Print) {
-    output::Print p("output:");
+    output::Print<int> p("output:");
     EXPECT_EQ(p(5), 5);
 }
