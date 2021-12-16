@@ -6,7 +6,10 @@
 namespace tributary {
 namespace streaming {
 
-T_EXPORT int streamingExportCheck() { return 1; }
+T_EXPORT int
+streamingExportCheck() {
+  return 1;
+}
 
 } // namespace streaming
 } // namespace tributary
