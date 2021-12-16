@@ -27,7 +27,7 @@ jobs:
           git clone https://github.com/Microsoft/vcpkg
           cd vcpkg
           .\bootstrap-vcpkg.bat
-          .\vcpkg.exe install boost-algorithm boost-system boost-uuid gtest
+          .\vcpkg.exe install boost-algorithm boost-asio boost-coroutine boost-system boost-uuid gtest
           .\vcpkg.exe integrate install
       if: ${{ matrix.os == 'windows-latest' }}
       env:

@@ -1,7 +1,11 @@
 #pragma once
 
 #include <functional>
+#include <future>
+#include <cppcoro/task.hpp>
 #include <tributary/base.h>
+
+using namespace std::chrono_literals;
 
 namespace tributary {
 namespace utils {
@@ -11,6 +15,14 @@ static std::function<int()> generator = [] {
   int i = 0;
   return [=]() mutable { return i < 10 ? i++ : -1; };
 }();
+
+static std::function<std::future<int>()> asyncGenerator = [] {
+  int i = 0;
+  return [=]() mutable { return std::async(std::launch::async, [=]() mutable -> int {  return i < 10 ? i++ : -1; }); };
+}();
+
+
+T_EXPORT cppcoro::task<int> asyncGeneratorCoro();
 
 static std::function<int()>
 addTo(int x) {
