@@ -1,3 +1,7 @@
+#ifdef WIN32
+// #pragma comment(lib, "tributary")
+#endif
+
 #include <iostream>
 #include <gtest/gtest.h>
 #include <tributary/streaming.h>
@@ -38,7 +42,13 @@ TEST(StreamingTest, Generator) {
 }
 
 TEST(StreamingTest, Const) {
-    Const c(5);
+    input::Const c(5);
     EXPECT_EQ(c(), 5);
     EXPECT_EQ(c(), 5);
+}
+
+
+TEST(StreamingTest, Print) {
+    output::Print<int> p("output:");
+    EXPECT_EQ(p(5), 5);
 }
