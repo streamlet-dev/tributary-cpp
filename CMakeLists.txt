@@ -25,6 +25,19 @@ else()
     set(LINUX ON)
 endif()
 
+if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+endif()
+
+if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+endif()
+
+if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+endif()
+
+
 ###################################################
 # Helper to grab dependencies from remote sources #
 ###################################################
@@ -88,7 +101,6 @@ endfunction()
 #######################
 find_package(Color)
 
-option(T_CPP_BUILD_STRICT "Build the C++ with strict warnings" OFF)
 option(T_CPP_TESTS "Build the C++ tests" ON)
 
 if(DEFINED ENV{T_DEBUG})
@@ -99,18 +111,10 @@ else()
     endif()
 endif()
 
-if(NOT DEFINED T_CPP_BUILD_STRICT)
-    set(T_CPP_BUILD_STRICT OFF)
-endif()
-
 set(T_CPP_SRC "${CMAKE_SOURCE_DIR}")
 message("${Cyan}Building C++ binding${ColorReset}")
 
-if(T_CPP_BUILD_STRICT)
-    message("${Cyan}Building C++ with strict warnings${ColorReset}")
-else()
-    message("${Yellow}Building C++ without strict warnings${ColorReset}")
-endif()
+message("${Cyan}Building C++ with strict warnings${ColorReset}")
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWER )
 if(CMAKE_BUILD_TYPE_LOWER STREQUAL debug)
@@ -133,9 +137,9 @@ else()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++1y")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++1y -Wall")
 elseif(WIN32)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std=c++17")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std=c++17 /WX")
 endif()
 
 if(WIN32)
@@ -156,7 +160,7 @@ if(WIN32)
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd${warning}")
     endforeach(warning)
     set(CMAKE_CXX_FLAGS " /EHsc /MP /bigobj")
-    set(CMAKE_SHARED_LIBRARY_PREFIX lib)
+
 else()
     if(CMAKE_BUILD_TYPE_LOWER STREQUAL debug)
         set(OPT_FLAGS " \
@@ -196,45 +200,37 @@ set (SOURCE_FILES
     )
 
 add_library(tributary SHARED ${SOURCE_FILES})
+add_executable(test_nongtest ${T_CPP_SRC}/test/test_nongtest.cpp)
+target_link_libraries(test_nongtest tributary)
 
-if(T_CPP_BUILD_STRICT AND NOT WIN32)
-    target_compile_options(tributary PRIVATE -Wall -Werror)
-    target_compile_options(tributary PRIVATE $<$<CONFIG:DEBUG>:-fPIC -O0>)
+if(WIN32)
+    target_compile_definitions(tributary PUBLIC T_EXPORTS=1 PRIVATE WIN32=1 _WIN32=1)
+    target_compile_definitions(test_nongtest PUBLIC WIN32=1 _WIN32=1)
 elseif(WIN32)
-    target_compile_definitions(tributary PRIVATE T_EXPORTS=1)
-    target_compile_definitions(tributary PRIVATE WIN32=1)
-    target_compile_definitions(tributary PRIVATE _WIN32=1)
+    target_compile_options(tributary PRIVATE -Wall -Werror $<$<CONFIG:DEBUG>:-fPIC -O0>)
+    target_compile_options(test_nongtest PRIVATE -Wall -Werror $<$<CONFIG:DEBUG>:-fPIC -O0>)
 endif()
 
 if(T_CPP_TESTS)
-    # if(NOT WIN32)
-    #     t_build_dep("gtest" "${T_CMAKE_MODULE_PATH}/gtest.txt.in")
-    # endif()
-
     find_package(GTest REQUIRED)
-    include_directories(${GTEST_INCLUDE_DIRS})
-    enable_testing()
+    include(GoogleTest)
 
-    # add_executable(test_base ${T_CPP_SRC}/test/test_base.cpp)
-    # add_executable(test_lazy ${T_CPP_SRC}/test/test_lazy.cpp)
-    add_executable(test_streaming ${T_CPP_SRC}/test/test_streaming.cpp)
-
-    if (WIN32)
-        # target_compile_definitions(test_base PRIVATE WIN32=1)
-        # target_compile_definitions(test_base PRIVATE _WIN32=1)
-        # target_compile_definitions(test_lazy PRIVATE WIN32=1)
-        # target_compile_definitions(test_lazy PRIVATE _WIN32=1)
-        target_compile_definitions(test_streaming PRIVATE WIN32=1)
-        target_compile_definitions(test_streaming PRIVATE _WIN32=1)
+    if(${GTEST_INCLUDE_DIRS})
+        include_directories(${GTEST_INCLUDE_DIRS})
     endif()
 
-    # target_link_libraries(test_base PRIVATE GTest::Main)
-    # target_link_libraries(test_lazy PRIVATE GTest::Main)
- 
-    # target_link_libraries(test_streaming PRIVATE GTest::Main tributary)
-    target_link_libraries(test_streaming PRIVATE GTest::Main tributary)
-    
-    # gtest_discover_tests(test_base)
-    # gtest_discover_tests(test_lazy)
+    enable_testing()
+
+
+    if (WIN32)
+        add_executable(test_streaming ${T_CPP_SRC}/test/test_streaming.cpp ${SOURCE_FILES})
+        target_compile_definitions(test_streaming PRIVATE T_EXPORTS=1 WIN32=1 _WIN32=1)
+        target_link_libraries(test_streaming GTest::Main)
+    else()
+        add_executable(test_streaming ${T_CPP_SRC}/test/test_streaming.cpp)
+        target_link_libraries(test_streaming PRIVATE GTest::Main tributary)
+    endif()
+
     gtest_discover_tests(test_streaming)
+
 endif()

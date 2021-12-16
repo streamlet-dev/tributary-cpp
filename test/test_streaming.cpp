@@ -1,3 +1,7 @@
+#ifdef WIN32
+// #pragma comment(lib, "tributary")
+#endif
+
 #include <iostream>
 #include <gtest/gtest.h>
 #include <tributary/streaming.h>
