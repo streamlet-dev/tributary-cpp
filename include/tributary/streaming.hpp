@@ -18,7 +18,7 @@ T_EXPORT int streamingExportCheck();
 
 template <typename Function>
 inline T_EXPORT t_func<t_fut<invoke_result_t<Function>>()> convertToCoroutine(Function _func) {
-  auto ret = [func = func]() -> t_fut<invoke_result_t<Function>> { co_return func(); };
+  auto ret = [func = _func]() -> t_fut<invoke_result_t<Function>> { co_return func(); };
   return ret;
 }
 

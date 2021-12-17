@@ -15,21 +15,27 @@ static auto _defaultFunction = []() { return 1; };
 // https://stackoverflow.com/questions/57037888/how-to-store-any-kind-of-function-in-a-variable-in-c
 template <typename Function, typename... Args>
 class T_EXPORT Node : public BaseNode {
+  // Construct return type of provided function
+  using ReturnType = invoke_result_t<Function, Args...>;
+
 public:
   Node(Function _func)
     : name("Node")
     , id(generateUUID())
     , func(_func) {}
 
-  auto
+  auto value() {
+    return last;
+  }
+
+  t_value<ReturnType>
   operator()(Args... _args) {
+    if (_backpressure()) {
+      return StreamNone::inst();
+    }
     return func(forward<Args>(_args)...);
   }
 
-
-//  def value(self):
-//         """get value from node"""
-//         return self._last
 
   // async def __call__(self):
   //     """execute the callable if possible, and propogate values downstream"""
@@ -86,9 +92,6 @@ protected:
   // Unique ID of the node
   t_str id;
 
-  // Construct return type of provided function
-  using ReturnType = invoke_result_t<Function, Args...>;
-
   // Stored function
   t_func<ReturnType(Args...)> func;
 
@@ -96,7 +99,7 @@ protected:
   t_value<ReturnType> last;
 
 private:
-  bool _backpressure() const;
+  bool _backpressure() const {return false;}
 
   static constexpr size_t Inputs = sizeof...(Args);
   t_nodelist upstream;
