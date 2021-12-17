@@ -13,12 +13,26 @@ using namespace std::chrono_literals;
 namespace tributary {
 namespace utils {
 
-T_EXPORT cppcoro::task<int>
-asyncGeneratorCoro() {
+T_EXPORT
+cppcoro::task<int>
+asyncFunctionCoro() {
   static int value{0};
   std::this_thread::sleep_for(100ms);
   co_return value += 1;
 }
+
+T_EXPORT cppcoro::generator<int>
+asyncGenerator() {
+  int x = 0;
+  while (true)
+    co_yield x++;
+}
+
+T_EXPORT std::function<int()>
+addTo(int x) {
+  int i = 0;
+  return [=]() mutable { return i++ + x; };
+};
 
 T_EXPORT std::string
 generateUUID() {

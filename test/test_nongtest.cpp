@@ -10,6 +10,8 @@
 using namespace tributary::streaming;
 using namespace tributary::utils;
 
+int func() { return 1;} 
+
 int main() {
     std::cout << "Export check: " << streamingExportCheck() << std::endl;
 
@@ -24,10 +26,19 @@ int main() {
 
     std::cout << "*******************************************" << std::endl;
 
-    std::cout << cppcoro::sync_wait(asyncGeneratorCoro()) << std::endl;
-    std::cout << cppcoro::sync_wait(asyncGeneratorCoro()) << std::endl;
-    std::cout << cppcoro::sync_wait(asyncGeneratorCoro()) << std::endl;
-    std::cout << cppcoro::sync_wait(asyncGeneratorCoro()) << std::endl;
+    std::cout << cppcoro::sync_wait(asyncFunctionCoro()) << std::endl;
+    std::cout << cppcoro::sync_wait(asyncFunctionCoro()) << std::endl;
+    std::cout << cppcoro::sync_wait(asyncFunctionCoro()) << std::endl;
+    std::cout << cppcoro::sync_wait(asyncFunctionCoro()) << std::endl;
+
+    std::cout << "*******************************************" << std::endl;
+
+    // std::function<cppcoro::task<int>()> foo = tributary::streaming::convertToCoroutine<std::function<int()>>(func);
+    std::function<cppcoro::task<int>()> foo = tributary::streaming::convertToCoroutine(generator);
+    std::cout << cppcoro::sync_wait(foo()) << std::endl;
+    std::cout << cppcoro::sync_wait(foo()) << std::endl;
+    std::cout << cppcoro::sync_wait(foo()) << std::endl;
+    std::cout << cppcoro::sync_wait(foo()) << std::endl;
 
     std::cout << "*******************************************" << std::endl;
 

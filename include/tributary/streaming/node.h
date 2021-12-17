@@ -20,9 +20,9 @@ template <typename Function, typename... Args>
 class T_EXPORT Node : public BaseNode {
 public:
   Node(Function _function)
-    : function(_function)
-    , name("Node")
-    , id(generateUUID()) { }
+    : name("Node")
+    , id(generateUUID())
+    , function(_function) {}
 
   auto
   operator()(Args... _args) {
@@ -105,7 +105,6 @@ protected:
 
 private:
   bool _backpressure() const;
-
 
   std::vector<Node> upstream;
   std::vector<Node> downstream;

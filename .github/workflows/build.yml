@@ -51,7 +51,7 @@ jobs:
 
     - name: Lint
       run: |
-        ./scripts/lint.sh
+        ./bin/lint.sh
       if: ${{ matrix.os == 'macos-latest' }}
 
     - name: Build

@@ -136,10 +136,10 @@ else()
     include_directories( ${Boost_INCLUDE_DIRS} )
 endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -Wall")
-elseif(WIN32)
+if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /await /EHsc /MP /bigobj")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
 endif()
 
 if(WIN32)

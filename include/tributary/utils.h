@@ -3,6 +3,7 @@
 #include <functional>
 #include <future>
 #include <cppcoro/task.hpp>
+#include <cppcoro/generator.hpp>
 #include <tributary/base.h>
 
 using namespace std::chrono_literals;
@@ -16,18 +17,16 @@ static std::function<int()> generator = [] {
   return [=]() mutable { return i < 10 ? i++ : -1; };
 }();
 
-static std::function<std::future<int>()> asyncGenerator = [] {
+static std::function<std::future<int>()> asyncFunction = [] {
   int i = 0;
   return [=]() mutable { return std::async(std::launch::async, [=]() mutable -> int { return i < 10 ? i++ : -1; }); };
 }();
 
-T_EXPORT cppcoro::task<int> asyncGeneratorCoro();
+T_EXPORT cppcoro::task<int> asyncFunctionCoro();
 
-static std::function<int()>
-addTo(int x) {
-  int i = 0;
-  return [=]() mutable { return i++ + x; };
-};
+T_EXPORT cppcoro::generator<int> asyncGenerator();
+
+T_EXPORT std::function<int()> addTo(int x);
 
 T_EXPORT std::string generateUUID();
 
