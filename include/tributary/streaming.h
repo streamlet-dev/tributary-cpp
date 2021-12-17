@@ -14,8 +14,6 @@ T_EXPORT int streamingExportCheck();
 // T_EXPORT std::function<cppcoro::task<std::invoke_result_t<Function, Args...> >(Args...)> convertToCoroutine(
 //   std::function<std::invoke_result_t<Function, Args...>(Args...)> function);
 
-// template <>
-// T_EXPORT std::function<cppcoro::task<int>()> convertToCoroutine<std::function<int()>>(
 template <typename Function>
 inline T_EXPORT std::function<cppcoro::task<std::invoke_result_t<Function>>()>
 convertToCoroutine(Function function) {

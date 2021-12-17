@@ -50,9 +50,6 @@ jobs:
         sudo ./b2 -j8 --with-system install
         sudo apt-get install libgtest-dev 
       if: ${{ matrix.os == 'ubuntu-latest' }}
-      env:
-        CC: gcc-${{ matrix.gcc }}
-        CXX: g++-${{ matrix.gcc }}
 
     - name: Lint
       run: |
