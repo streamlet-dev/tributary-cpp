@@ -1,5 +1,5 @@
 
-#include <tributary/streaming.h>
+#include <tributary/streaming.hpp>
 
 namespace tributary {
 namespace streaming {

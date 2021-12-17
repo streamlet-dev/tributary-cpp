@@ -1,34 +1,19 @@
 #pragma once
-
 #include <functional>
 #include <future>
+#include <iostream>
+#include <string>
+#include <tuple>
+#include <vector>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <cppcoro/task.hpp>
 #include <cppcoro/generator.hpp>
-#include <tributary/base.h>
-
-using namespace std::chrono_literals;
+#include <tributary/base.hpp>
 
 namespace tributary {
-namespace utils {
-
-// https://stackoverflow.com/questions/9059187/equivalent-c-to-python-generator-pattern
-static std::function<int()> generator = [] {
-  int i = 0;
-  return [=]() mutable { return i < 10 ? i++ : -1; };
-}();
-
-static std::function<std::future<int>()> asyncFunction = [] {
-  int i = 0;
-  return [=]() mutable { return std::async(std::launch::async, [=]() mutable -> int { return i < 10 ? i++ : -1; }); };
-}();
-
-T_EXPORT cppcoro::task<int> asyncFunctionCoro() noexcept(true);
-
-T_EXPORT cppcoro::generator<int> asyncGenerator();
-
-T_EXPORT std::function<int()> addTo(int x);
-
-T_EXPORT std::string generateUUID();
 
 class T_EXPORT BaseNode {
 protected:
@@ -74,5 +59,26 @@ private:
   ~StreamEnd() = default;
 };
 
-} // namespace utils
-} // namespace tributary
+}
+
+
+typedef std::string t_str;
+typedef tributary::BaseNode t_node;
+typedef std::vector<std::shared_ptr<t_node>> t_nodelist;
+
+// Last value of function
+// if last.first is not NULL, it is the result, otherwise return last.second
+template <typename T>
+using t_value = std::tuple<std::shared_ptr<t_node>, T>;
+
+template <typename T>
+using t_sfut = std::future<T>;
+
+template <typename T>
+using t_func = std::function<T>;
+
+template <typename T>
+using t_fut = cppcoro::task<T>;
+
+template <typename T>
+using t_gen = cppcoro::generator<T>;

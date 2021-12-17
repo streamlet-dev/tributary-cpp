@@ -1,16 +1,13 @@
 #pragma once
-#include <any>
-#include <functional>
 #include <iostream>
-#include <string>
-#include <vector>
-#include <tributary/base.h>
-#include <tributary/utils.h>
+#include <tributary/base.hpp>
+#include <tributary/utils.hpp>
+
+using namespace tributary::utils;
+using namespace std;
 
 namespace tributary {
 namespace streaming {
-
-using namespace tributary::utils;
 
 // auto _defaultFunction = [&]() { return 1; }
 static auto _defaultFunction = []() { return 1; };
@@ -19,16 +16,16 @@ static auto _defaultFunction = []() { return 1; };
 template <typename Function, typename... Args>
 class T_EXPORT Node : public BaseNode {
 public:
-  Node(Function _function)
+  Node(Function _func)
     : name("Node")
     , id(generateUUID())
-    , function(_function) {}
+    , func(_func) {}
 
   auto
   operator()(Args... _args) {
-    // std::function<std::invoke_result_t<Function, Args...>()> mappedFunction = dynamic_cast<std::function<std::invoke_result_t<Function,
+    // function<invoke_result_t<Function, Args...>()> mappedFunction = dynamic_cast<function<invoke_result_t<Function,
     // Args...>()>>(function);
-    return function(std::forward<Args>(_args)...);
+    return func(forward<Args>(_args)...);
   }
 
 
@@ -79,7 +76,7 @@ public:
   //                 ready = False
 
 
-  friend T_EXPORT std::ostream& operator<<(std::ostream& ostream, const Node<Function, Args...>& node) {
+  friend T_EXPORT ostream& operator<<(ostream& ostream, const Node<Function, Args...>& node) {
     // ostream << node.getName() << "[" << node.getId().substr(0, 6) << "]";
     ostream << node.name << "[" << node.id.substr(0, 6) << "]";
     return ostream;
@@ -87,28 +84,26 @@ public:
 
 protected:
   // Name of the node
-  std::string name;
+  t_str name;
 
   // Unique ID of the node
-  std::string id;
+  t_str id;
 
   // Construct return type of provided function
-  using ReturnType = std::invoke_result_t<Function, Args...>;
+  using ReturnType = invoke_result_t<Function, Args...>;
 
   // Stored function
-  std::function<ReturnType(Args...)> function;
+  t_func<ReturnType(Args...)> func;
 
   // Last value of function
-  // if last.first is not NULL, it is the result, otherwise return last.second
-  std::tuple<BaseNode*, ReturnType> last;
+  t_value<ReturnType> last;
 
 private:
   bool _backpressure() const;
 
-  static constexpr std::size_t Inputs = sizeof...(Args);
-  Node* upstream[Inputs];
-  Node* downstream[Inputs];
-  // std::function<std::invoke_result_t<Function, Args...>()> function;
+  static constexpr size_t Inputs = sizeof...(Args);
+  t_nodelist upstream;
+  t_nodelist downstream;
 };
 
 
@@ -116,8 +111,8 @@ template <typename Function, typename... Args>
 class T_EXPORT Foo : public Node<Function, Args...> {
 public:
   template <typename... Ts>
-  Foo(Function _function, std::tuple<Ts...> functionArgs)
-    : Node<Function, Args...>(std::bind(_function, functionArgs)) {}
+  Foo(Function _func, tuple<Ts...> funcArgs)
+    : Node<Function, Args...>(bind(_func, funcArgs)) {}
 
 protected:
 };

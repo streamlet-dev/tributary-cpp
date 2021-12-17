@@ -1,6 +1,6 @@
 #pragma once
-#include <tributary/base.h>
-#include <tributary/lazy/node.h>
+#include <tributary/base.hpp>
+#include <tributary/lazy/node.hpp>
 
 namespace tributary {
 namespace lazy {

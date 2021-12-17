@@ -1,43 +1,43 @@
 #include <chrono>
-#include <string>
 #include <thread>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <cppcoro/task.hpp>
-#include <tributary/utils.h>
+#include <tributary/base.hpp>
+#include <tributary/types.hpp>
+#include <tributary/utils.hpp>
 
-using namespace std::chrono_literals;
+using namespace std;
 
 namespace tributary {
 namespace utils {
 
-T_EXPORT
-cppcoro::task<int>
-asyncFunctionCoro() noexcept(true) {
+T_EXPORT t_fut<int>
+asyncFunctionCoro() {
   static int value{0};
-  std::this_thread::sleep_for(100ms);
+  this_thread::sleep_for(100ms);
   co_return value += 1;
 }
 
-T_EXPORT cppcoro::generator<int>
+T_EXPORT t_gen<int>
 asyncGenerator() {
   int x = 0;
   while (true)
     co_yield x++;
 }
 
-T_EXPORT std::function<int()>
+T_EXPORT t_func<int()>
 addTo(int x) {
   int i = 0;
   return [=]() mutable { return i++ + x; };
 };
 
-T_EXPORT std::string
+T_EXPORT t_str
 generateUUID() {
   static boost::uuids::random_generator uuidGenerator;
-  std::string uuid = boost::uuids::to_string(uuidGenerator());
+  t_str uuid = boost::uuids::to_string(uuidGenerator());
   boost::replace_all(uuid, "-", "");
   return uuid;
 };

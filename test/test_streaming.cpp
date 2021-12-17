@@ -4,26 +4,27 @@
 
 #include <iostream>
 #include <gtest/gtest.h>
-#include <tributary/streaming.h>
-#include <tributary/utils.h>
+#include <tributary/streaming.hpp>
+#include <tributary/utils.hpp>
 
 using namespace tributary::streaming;
 using namespace tributary::utils;
+using namespace std;
 
 TEST(StreamingTest, Instantiation) {
     // EXPECT_NO_THROW({
     //     Node n;
-    //     std::cout << n << std::endl;
+    //     cout << n << endl;
     // });
 
     EXPECT_NO_THROW({
         Node n(generator);
-        std::cout << n << std::endl;
+        cout << n << endl;
     });
 
     EXPECT_NO_THROW({
         Node n(addTo(5));
-        std::cout << n << std::endl;
+        cout << n << endl;
     });
 }
 

@@ -1,5 +1,5 @@
 
-#include <tributary/lazy.h>
+#include <tributary/lazy.hpp>
 
 namespace tributary {
 namespace lazy {

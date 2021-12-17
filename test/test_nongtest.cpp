@@ -4,43 +4,44 @@
 
 #include <iostream>
 #include <cppcoro/sync_wait.hpp>
-#include <tributary/streaming.h>
-#include <tributary/utils.h>
+#include <tributary/streaming.hpp>
+#include <tributary/utils.hpp>
 
 using namespace tributary::streaming;
 using namespace tributary::utils;
+using namespace std;
 
 int func() { return 1;} 
 
 int main() {
-    std::cout << "Export check: " << streamingExportCheck() << std::endl;
+    cout << "Export check: " << streamingExportCheck() << endl;
 
-    std::cout << "*******************************************" << std::endl;
+    cout << "*******************************************" << endl;
 
     Node n(generator);
-    // std::cout << n << std::endl;
-    std::cout << n() << std::endl;
-    std::cout << n() << std::endl;
-    std::cout << n() << std::endl;
-    std::cout << n() << std::endl;
+    // cout << n << endl;
+    cout << n() << endl;
+    cout << n() << endl;
+    cout << n() << endl;
+    cout << n() << endl;
 
-    std::cout << "*******************************************" << std::endl;
+    cout << "*******************************************" << endl;
 
-    std::cout << cppcoro::sync_wait(asyncFunctionCoro()) << std::endl;
-    std::cout << cppcoro::sync_wait(asyncFunctionCoro()) << std::endl;
-    std::cout << cppcoro::sync_wait(asyncFunctionCoro()) << std::endl;
-    std::cout << cppcoro::sync_wait(asyncFunctionCoro()) << std::endl;
+    cout << cppcoro::sync_wait(asyncFunctionCoro()) << endl;
+    cout << cppcoro::sync_wait(asyncFunctionCoro()) << endl;
+    cout << cppcoro::sync_wait(asyncFunctionCoro()) << endl;
+    cout << cppcoro::sync_wait(asyncFunctionCoro()) << endl;
 
-    std::cout << "*******************************************" << std::endl;
+    cout << "*******************************************" << endl;
 
-    // std::function<cppcoro::task<int>()> foo = tributary::streaming::convertToCoroutine<std::function<int()>>(func);
-    std::function<cppcoro::task<int>()> foo = tributary::streaming::convertToCoroutine(generator);
-    std::cout << cppcoro::sync_wait(foo()) << std::endl;
-    std::cout << cppcoro::sync_wait(foo()) << std::endl;
-    std::cout << cppcoro::sync_wait(foo()) << std::endl;
-    std::cout << cppcoro::sync_wait(foo()) << std::endl;
+    // function<cppcoro::task<int>()> foo = tributary::streaming::convertToCoroutine<function<int()>>(func);
+    function<cppcoro::task<int>()> foo = tributary::streaming::convertToCoroutine(generator);
+    cout << cppcoro::sync_wait(foo()) << endl;
+    cout << cppcoro::sync_wait(foo()) << endl;
+    cout << cppcoro::sync_wait(foo()) << endl;
+    cout << cppcoro::sync_wait(foo()) << endl;
 
-    std::cout << "*******************************************" << std::endl;
+    cout << "*******************************************" << endl;
 
 
 }

@@ -1,2 +1,5 @@
 
-#include <tributary/base.h>
+#include <tributary/base.hpp>
+
+namespace tributary {
+}

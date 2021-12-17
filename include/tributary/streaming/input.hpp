@@ -1,16 +1,18 @@
 #pragma once
-#include <functional>
-#include <tributary/streaming/node.h>
+#include <tributary/types.hpp>
+#include <tributary/streaming/node.hpp>
+
+using namespace std;
 
 namespace tributary {
 namespace streaming {
 namespace input {
 
 template <typename T>
-class T_EXPORT Const : public Node<std::function<T()>> {
+class T_EXPORT Const : public Node<t_func<T()>> {
 public:
   Const(T _value)
-    : Node<std::function<T()>>([&]() { return value; })
+    : Node<t_func<T()>>([&]() { return value; })
     , value(_value) {
     this->name = "Const";
   }
