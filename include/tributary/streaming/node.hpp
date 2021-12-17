@@ -23,8 +23,6 @@ public:
 
   auto
   operator()(Args... _args) {
-    // function<invoke_result_t<Function, Args...>()> mappedFunction = dynamic_cast<function<invoke_result_t<Function,
-    // Args...>()>>(function);
     return func(forward<Args>(_args)...);
   }
 
@@ -77,7 +75,6 @@ public:
 
 
   friend T_EXPORT ostream& operator<<(ostream& ostream, const Node<Function, Args...>& node) {
-    // ostream << node.getName() << "[" << node.getId().substr(0, 6) << "]";
     ostream << node.name << "[" << node.id.substr(0, 6) << "]";
     return ostream;
   }
