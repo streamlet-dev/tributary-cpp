@@ -75,6 +75,8 @@ jobs:
       env:
         CC: gcc-${{ matrix.gcc }}
         CXX: g++-${{ matrix.gcc }}
+        CMAKE_C_COMPILER:  gcc-${{ matrix.gcc }}
+        CMAKE_CXX_COMPILER: g++-${{ matrix.gcc }}
 
     - name: Build (Windows)
       run: |
