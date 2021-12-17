@@ -1,4 +1,5 @@
 #pragma once
+#include <deque>
 #include <functional>
 #include <future>
 #include <iostream>
@@ -9,8 +10,9 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <cppcoro/task.hpp>
 #include <cppcoro/generator.hpp>
+#include <cppcoro/sync_wait.hpp>
+#include <cppcoro/task.hpp>
 #include <tributary/base.hpp>
 
 namespace tributary {
@@ -86,6 +88,17 @@ struct T_EXPORT t_value {
     , state(NULL)
     , value(_value) {}
 
+    template <typename T>
+    bool isStreamType() const {
+      if (hasValue) return false;
+      return state == &(T::inst());
+    }
+
+    bool isStreamNone() const { return isStreamType<StreamNone>(); }
+    bool isStreamRepeat() const { return isStreamType<StreamRepeat>(); }
+    bool isStreamEnd() const { return isStreamType<StreamEnd>(); }
+
+
     friend T_EXPORT std::ostream& operator<<(std::ostream& ostream, const t_value<T>& value) {
         if (value.hasValue) {
             ostream << value.value;
@@ -102,7 +115,7 @@ struct T_EXPORT t_value {
 
 typedef std::string t_str;
 typedef tributary::BaseNode t_node;
-typedef std::vector<std::shared_ptr<t_node>> t_nodelist;
+typedef std::shared_ptr<t_node> t_nodeptr;
 
 template <typename T>
 using t_sfut = std::future<T>;

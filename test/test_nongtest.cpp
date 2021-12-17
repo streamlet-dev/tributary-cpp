@@ -15,11 +15,11 @@ using namespace tributary::utils;
 
 int func() { return 1;} 
 
-int main() {
-    cout << "Export check: " << streamingExportCheck() << endl;
-
+void hr() {
     cout << "*******************************************" << endl;
+}
 
+void basics() {
     Node n(generator);
     // cout << n << endl;
     cout << n() << endl;
@@ -27,14 +27,14 @@ int main() {
     cout << n() << endl;
     cout << n() << endl;
 
-    cout << "*******************************************" << endl;
+    hr();
 
     cout << cppcoro::sync_wait(asyncFunctionCoro()) << endl;
     cout << cppcoro::sync_wait(asyncFunctionCoro()) << endl;
     cout << cppcoro::sync_wait(asyncFunctionCoro()) << endl;
     cout << cppcoro::sync_wait(asyncFunctionCoro()) << endl;
 
-    cout << "*******************************************" << endl;
+    hr();
 
     // function<cppcoro::task<int>()> foo = tributary::streaming::convertToCoroutine<function<int()>>(func);
     function<t_fut<int>()> foo = tributary::streaming::convertToCoroutine(generator);
@@ -43,7 +43,22 @@ int main() {
     cout << cppcoro::sync_wait(foo()) << endl;
     cout << cppcoro::sync_wait(foo()) << endl;
 
-    cout << "*******************************************" << endl;
+    hr();
+}
 
+void stream() {
+    tributary::streaming::Node n(generator);
+    tributary::streaming::input::Const c1(5);
 
+    // auto add = n + c1 + 3;
+    // auto output = tributary::streaming::output::Print(add);
+    // tributary::streaming::run(output);
+}
+
+int main() {
+    cout << "Export check: " << streamingExportCheck() << endl;
+    hr();
+    basics();
+    hr();
+    stream();
 }
