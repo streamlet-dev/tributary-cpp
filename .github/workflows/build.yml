@@ -18,7 +18,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.9]
         event-name: [push]
-        gcc: [8]
+        gcc: [9]
 
     steps:
     - uses: actions/checkout@v2
@@ -42,12 +42,13 @@ jobs:
 
     - name: Install System Dependencies (Linux)
       run: |
+        sudo apt-get install gcc-9
         wget https://boostorg.jfrog.io/artifactory/main/release/1.71.0/source/boost_1_71_0.tar.gz >/dev/null 2>&1
         tar xfz boost_1_71_0.tar.gz
         cd boost_1_71_0
         ./bootstrap.sh
         sudo ./b2 -j8 --with-system install
-        sudo apt-get install libgtest-dev
+        sudo apt-get install libgtest-dev 
       if: ${{ matrix.os == 'ubuntu-latest' }}
       env:
         CC: gcc-${{ matrix.gcc }}
