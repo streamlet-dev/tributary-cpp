@@ -5,7 +5,6 @@ include(CheckCCompilerFlag)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-
 if(NOT DEFINED T_CMAKE_MODULE_PATH)
     set(T_CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
 endif()
@@ -139,7 +138,7 @@ endif()
 if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /await /EHsc /MP /bigobj")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -Wall")
 endif()
 
 if(WIN32)
