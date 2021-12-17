@@ -11,8 +11,8 @@ template <typename T>
 class T_EXPORT Print : public Node<std::function<T(T)>, T> {
 public:
   Print(std::string _text = "")
-    : Node<std::function<T(T)>, T>([=](T value) -> T {
-      std::cout << text << value << std::endl;
+    : Node<std::function<T(T)>, T>([this](T value) -> T {
+      std::cout << this->text << value << std::endl;
       return value;
     })
     , text(_text) {

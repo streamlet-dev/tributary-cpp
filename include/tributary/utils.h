@@ -22,7 +22,7 @@ static std::function<std::future<int>()> asyncFunction = [] {
   return [=]() mutable { return std::async(std::launch::async, [=]() mutable -> int { return i < 10 ? i++ : -1; }); };
 }();
 
-T_EXPORT cppcoro::task<int> asyncFunctionCoro();
+T_EXPORT cppcoro::task<int> asyncFunctionCoro() noexcept;
 
 T_EXPORT cppcoro::generator<int> asyncGenerator();
 

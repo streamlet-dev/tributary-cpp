@@ -15,7 +15,7 @@ namespace utils {
 
 T_EXPORT
 cppcoro::task<int>
-asyncFunctionCoro() {
+asyncFunctionCoro() noexcept {
   static int value{0};
   std::this_thread::sleep_for(100ms);
   co_return value += 1;
