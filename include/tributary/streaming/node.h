@@ -102,12 +102,12 @@ protected:
   // if last.first is not NULL, it is the result, otherwise return last.second
   std::tuple<BaseNode*, ReturnType> last;
 
-
 private:
   bool _backpressure() const;
 
-  std::vector<Node> upstream;
-  std::vector<Node> downstream;
+  static constexpr std::size_t Inputs = sizeof...(Args);
+  Node* upstream[Inputs];
+  Node* downstream[Inputs];
   // std::function<std::invoke_result_t<Function, Args...>()> function;
 };
 
