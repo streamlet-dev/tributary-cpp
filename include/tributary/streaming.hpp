@@ -17,15 +17,13 @@ T_EXPORT int streamingExportCheck();
 //   std::function<std::invoke_result_t<Function, Args...>(Args...)> function);
 
 template <typename Function>
-inline T_EXPORT t_func<t_fut<invoke_result_t<Function>>()>
-convertToCoroutine(Function _func) {
+inline T_EXPORT t_func<t_fut<invoke_result_t<Function>>()> convertToCoroutine(Function _func) {
   auto ret = [func = func]() -> t_fut<invoke_result_t<Function>> { co_return func(); };
   return ret;
 }
 
 template <typename Function>
-inline T_EXPORT t_fut<invoke_result_t<Function>>
-convertToCoroutine(t_fut<invoke_result_t<Function>> coro) {
+inline T_EXPORT t_fut<invoke_result_t<Function>> convertToCoroutine(t_fut<invoke_result_t<Function>> coro) {
   return coro;
 };
 

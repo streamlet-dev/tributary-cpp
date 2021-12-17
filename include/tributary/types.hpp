@@ -22,8 +22,7 @@ protected:
 
 class T_EXPORT StreamNone : public BaseNode {
 public:
-  StreamNone&
-  inst() {
+  StreamNone& inst() {
     static StreamNone inst;
     return inst;
   }
@@ -35,8 +34,7 @@ private:
 
 class T_EXPORT StreamBegin : public BaseNode {
 public:
-  StreamBegin&
-  inst() {
+  StreamBegin& inst() {
     static StreamBegin inst;
     return inst;
   }
@@ -48,8 +46,7 @@ private:
 
 class T_EXPORT StreamEnd : public BaseNode {
 public:
-  StreamEnd&
-  inst() {
+  StreamEnd& inst() {
     static StreamEnd inst;
     return inst;
   }
@@ -59,8 +56,7 @@ private:
   ~StreamEnd() = default;
 };
 
-}
-
+} // namespace tributary
 
 typedef std::string t_str;
 typedef tributary::BaseNode t_node;

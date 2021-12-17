@@ -1,5 +1,4 @@
 
 #include <tributary/base.hpp>
 
-namespace tributary {
-}
+namespace tributary {}
