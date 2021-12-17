@@ -138,8 +138,10 @@ endif()
 
 if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /await /EHsc /MP /bigobj")
-else()
+elseif(MACOS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fcoroutines -Wall")
 endif()
 
 if(WIN32)
