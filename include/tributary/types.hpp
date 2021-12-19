@@ -40,17 +40,17 @@ private:
   const std::string name = "StreamNone"; 
 };
 
-class T_EXPORT StreamBegin : public BaseNode {
+class T_EXPORT StreamRepeat : public BaseNode {
 public:
-  static StreamBegin& inst() {
-    static StreamBegin inst;
+  static StreamRepeat& inst() {
+    static StreamRepeat inst;
     return inst;
   }
 
 private:
-  StreamBegin() = default;
-  ~StreamBegin() = default;
-  const std::string name = "StreamBegin"; 
+  StreamRepeat() = default;
+  ~StreamRepeat() = default;
+  const std::string name = "StreamRepeat"; 
 };
 
 class T_EXPORT StreamEnd : public BaseNode {

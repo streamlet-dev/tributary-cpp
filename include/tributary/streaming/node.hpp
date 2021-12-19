@@ -66,15 +66,20 @@ public:
           // get from input queue
           auto val = inp.front();
           inp.pop_front();
-          //         while isinstance(val, StreamRepeat):
-          //             # Skip entry
-          //             val = inp.popleft()
 
-          //         if isinstance(val, StreamEnd):
-          //             return await self._finish()
+          while (val.isStreamRepeat()) {
+            // skip entry
+            val = inp.front();
+            inp.pop_front();
+          }
 
-          //         # set as active
-          //         self._active[i] = val
+          if (val.isStreamEnd()) {
+            return _finish();
+          }
+
+          // set as active
+          _active[i] = val;
+
         } else {
           // wait for value
           //         self._active[i] = StreamNone()
@@ -202,7 +207,7 @@ public:
   _output(ValueType ret) {
     // output value to downstream nodes
     // if downstreams, output
-    //     if not isinstance(ret, (StreamNone, StreamRepeat)):
+    if (!ret.isStreamNone() && !ret.isStreamRepeat()) {
     //         for down, i in self.downstream():
 
     //             if self._drop:
@@ -229,7 +234,7 @@ public:
 
     //             else:
     //                 await down._push(ret, i)
-    //     return ret
+    }
     return ret;
   }
 
