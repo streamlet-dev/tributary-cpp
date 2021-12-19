@@ -18,13 +18,11 @@
 namespace tributary {
 
 class T_EXPORT BaseNode {
-    friend T_EXPORT std::ostream& operator<<(std::ostream& ostream, const BaseNode& node) {
-        return (ostream << node.name);
-    }
+  friend T_EXPORT std::ostream& operator<<(std::ostream& ostream, const BaseNode& node) { return (ostream << node.name); }
 
 protected:
   BaseNode() = default;
-  const std::string name = "basenode"; 
+  const std::string name = "basenode";
 };
 
 class T_EXPORT StreamNone : public BaseNode {
@@ -37,7 +35,7 @@ public:
 private:
   StreamNone() = default;
   ~StreamNone() = default;
-  const std::string name = "StreamNone"; 
+  const std::string name = "StreamNone";
 };
 
 class T_EXPORT StreamRepeat : public BaseNode {
@@ -50,7 +48,7 @@ public:
 private:
   StreamRepeat() = default;
   ~StreamRepeat() = default;
-  const std::string name = "StreamRepeat"; 
+  const std::string name = "StreamRepeat";
 };
 
 class T_EXPORT StreamEnd : public BaseNode {
@@ -63,54 +61,53 @@ public:
 private:
   StreamEnd() = default;
   ~StreamEnd() = default;
-  const std::string name = "StreamEnd"; 
+  const std::string name = "StreamEnd";
 };
-
 
 // Last value of function
 // if last.first is not NULL, it is the result, otherwise return last.second
 template <typename T>
 struct T_EXPORT t_value {
-    t_value()
+  t_value()
     : hasValue(false)
     , state(&StreamNone::inst()) {}
 
-    t_value(BaseNode& _state)
+  t_value(BaseNode& _state)
     : hasValue(false)
     , state(&_state) {}
 
-    t_value(BaseNode* _state)
+  t_value(BaseNode* _state)
     : hasValue(false)
     , state(_state) {}
 
-    t_value(T _value) 
+  t_value(T _value)
     : hasValue(true)
     , state(NULL)
     , value(_value) {}
 
-    template <typename T>
-    bool isStreamType() const {
-      if (hasValue) return false;
-      return state == &(T::inst());
+  template <typename U>
+  bool isStreamType() const {
+    if (hasValue)
+      return false;
+    return state == &(U::inst());
+  }
+
+  bool isStreamNone() const { return isStreamType<StreamNone>(); }
+  bool isStreamRepeat() const { return isStreamType<StreamRepeat>(); }
+  bool isStreamEnd() const { return isStreamType<StreamEnd>(); }
+
+  friend T_EXPORT std::ostream& operator<<(std::ostream& ostream, const t_value<T>& value) {
+    if (value.hasValue) {
+      ostream << value.value;
+    } else {
+      ostream << *(value.state);
     }
+    return ostream;
+  }
 
-    bool isStreamNone() const { return isStreamType<StreamNone>(); }
-    bool isStreamRepeat() const { return isStreamType<StreamRepeat>(); }
-    bool isStreamEnd() const { return isStreamType<StreamEnd>(); }
-
-
-    friend T_EXPORT std::ostream& operator<<(std::ostream& ostream, const t_value<T>& value) {
-        if (value.hasValue) {
-            ostream << value.value;
-        } else {
-            ostream << *(value.state);
-        }
-        return ostream;
-    }
-
-    bool hasValue;
-    BaseNode* state;
-    T value;
+  bool hasValue;
+  BaseNode* state;
+  T value;
 };
 
 typedef std::string t_str;

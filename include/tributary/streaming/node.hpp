@@ -30,11 +30,14 @@ public:
     , func(_func) {}
 
   auto value() {
-    return last;
+    return _last;
   }
 
   ValueType
   operator()(Args... _args) {
+
+    /*
+
     // Downstream nodes can't process
     if (_backpressure()) {
       return StreamNone::inst();
@@ -82,16 +85,18 @@ public:
 
         } else {
           // wait for value
-          //         self._active[i] = StreamNone()
-          //         ready = False
+          _active[i] = StreamNone::inst();
+          ready = false;
         }
       }
     }
 
     if (ready) {
       // execute function
-      // return await self._execute()
+      return _execute();
     }
+
+    */
 
     return func(forward<Args>(_args)...);
   }
@@ -118,87 +123,98 @@ public:
     return _input[index].size() == 0 || _active[index].isNone();
   }
 
-  // async def _pop(self, index):
-  //     """pop value from downstream nodes"""
-  //     if len(self._input[index]) > 0:
-  //         return self._input[index].popleft()
+  void _pop(size_t index) {
+    // pop value from downstream nodes
+    if (_input[index].size() > 0) {
+      auto ret = _input[index].front();
+      _input[index].pop_front();
+      // return ret; // FIXME
+    }
+  }
 
 
+  ValueType
+  _execute() {
+    // execute callable
+    // assume no valid input
+    bool valid = false;
 
-  // async def _execute(self):
-  //     """execute callable"""
-  //     # assume no valid input
-  //     valid = False
+    // ValueType nextLast; // FIXME
 
-  //     # wait for valid input
-  //     while not valid:
-  //         # await if its a coroutine
-  //         if asyncio.iscoroutine(self._func):
-  //             _last = await self._func(*self._active, **self._func_kwargs)
+    // wait for valid input
+    while (!valid) {
+      // await if its a coroutine
+      // if asyncio.iscoroutine(self._func):
+      //     nextLast = await self._func(*self._active, **self._func_kwargs)
 
-  //         # else call it
-  //         elif isinstance(self._func, types.FunctionType):
-  //             try:
-  //                 # could be a generator
-  //                 try:
-  //                     _last = self._func(*self._active, **self._func_kwargs)
-  //                 except ZeroDivisionError:
-  //                     _last = float("inf")
+      //         # else call it
+      //         elif isinstance(self._func, types.FunctionType):
+          //             try:
+          //                 # could be a generator
+          //                 try:
+          //                     nextLast = self._func(*self._active, **self._func_kwargs)
+          //                 except ZeroDivisionError:
+          //                     nextLast = float("inf")
 
-  //             except ValueError:
-  //                 # Swap back to function to get a new generator next iteration
-  //                 self._func = self._old_func
-  //                 continue
+          //             except ValueError:
+          //                 # Swap back to function to get a new generator next iteration
+          //                 self._func = self._old_func
+          //                 continue
 
-  //         else:
-  //             raise TributaryException("Cannot use type:{}".format(type(self._func)))
+      //         else:
+      //             raise TributaryException("Cannot use type:{}".format(type(self._func)))
 
-  //         # calculation was valid
-  //         valid = True
+      // calculation was valid
+      valid = true;
 
-  //         # increment execution count
-  //         self._execution_count += 1
+      // increment execution count
+      _execution_count += 1;
+    }
 
-  //     if isinstance(_last, types.AsyncGeneratorType):
+  //     if isinstance(nextLast, types.AsyncGeneratorType):
 
-  //         async def _func(g=_last):
+  //         async def _func(g=nextLast):
   //             return await _agen_to_func(g)
 
   //         self._func = _func
-  //         _last = await self._func()
+  //         nextLast = await self._func()
 
-  //     elif isinstance(_last, types.GeneratorType):
+  //     elif isinstance(nextLast, types.GeneratorType):
   //         # Swap to generator unroller
   //         self._old_func = self._func
-  //         self._func = lambda g=_last: _gen_to_func(g)
-  //         _last = self._func()
+  //         self._func = lambda g=nextLast: _gen_to_func(g)
+  //         nextLast = self._func()
 
-  //     elif asyncio.iscoroutine(_last):
-  //         _last = await _last
+  //     elif asyncio.iscoroutine(nextLast):
+  //         nextLast = await nextLast
 
   //     if self._repeat:
   //         if isinstance(_last, (StreamNone, StreamRepeat)):
   //             # NOOP
   //             self._last = self._last
   //         else:
-  //             self._last = _last
+  //             self._last = nextLast
   //     else:
-  //         self._last = _last
+  //         self._last = nextLast
 
-  //     await self._output(self._last)
+    // _last = nextLast; // FIXME
+    _output(_last);
 
-  //     for i in range(len(self._active)):
-  //         self._active[i] = StreamNone()
+    for (auto i = 0; i < _active.size(); ++i) {
+      _active[i] = StreamNone::inst();
+    }
 
-  //     await self._enddd3g()
-  //     if isinstance(self._last, StreamEnd):
-  //         await self._finish()
+    if (_last.isStreamEnd()) {
+      _finish();
+    }
+    return _last;
+  }
 
   ValueType
   _finish() {
     // mark this node as finished
     _finished = true;
-    _last = StreamEnd::inst();
+    _last = StreamEnd::inst(); // FIXME
     return _output(_last);
   }
 
