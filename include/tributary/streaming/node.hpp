@@ -36,7 +36,6 @@ public:
   ValueType
   operator()(Args... _args) {
 
-    /*
 
     // Downstream nodes can't process
     if (_backpressure()) {
@@ -60,6 +59,9 @@ public:
     }
 
     bool ready = true;
+
+    /*
+
     // iterate through inputs 
     for (auto i = 0; i < _input.size(); ++i ) {
       // if input hasn't received value
@@ -91,14 +93,15 @@ public:
       }
     }
 
-    if (ready) {
-      // execute function
-      return _execute();
-    }
-
     */
 
-    return func(forward<Args>(_args)...);
+    if (ready) {
+      // execute function
+      return _execute(forward<Args>(_args)...);
+    }
+
+
+    return _last;
   }
 
   Node& operator>>(Node& rhs) {
@@ -134,12 +137,12 @@ public:
 
 
   ValueType
-  _execute() {
+  _execute(Args... _args) {
     // execute callable
     // assume no valid input
     bool valid = false;
 
-    // ValueType nextLast; // FIXME
+    ValueType nextLast;
 
     // wait for valid input
     while (!valid) {
@@ -149,17 +152,18 @@ public:
 
       //         # else call it
       //         elif isinstance(self._func, types.FunctionType):
-          //             try:
-          //                 # could be a generator
-          //                 try:
-          //                     nextLast = self._func(*self._active, **self._func_kwargs)
-          //                 except ZeroDivisionError:
-          //                     nextLast = float("inf")
+      //             try:
+      //                 # could be a generator
+      //                 try:
+        nextLast = func(forward<Args>(_args)...);
+      //                     nextLast = self._func(*self._active, **self._func_kwargs)
+      //                 except ZeroDivisionError:
+      //                     nextLast = float("inf")
 
-          //             except ValueError:
-          //                 # Swap back to function to get a new generator next iteration
-          //                 self._func = self._old_func
-          //                 continue
+      //             except ValueError:
+      //                 # Swap back to function to get a new generator next iteration
+      //                 self._func = self._old_func
+      //                 continue
 
       //         else:
       //             raise TributaryException("Cannot use type:{}".format(type(self._func)))
@@ -197,7 +201,7 @@ public:
   //     else:
   //         self._last = nextLast
 
-    // _last = nextLast; // FIXME
+    _last = nextLast;
     _output(_last);
 
     for (auto i = 0; i < _active.size(); ++i) {
