@@ -48,12 +48,28 @@ void basics() {
 
 void stream() {
     tributary::streaming::Node n(generator);
-    tributary::streaming::input::Const c1(5);
+    tributary::streaming::output::Print<int> p("out:");
 
+    n.pipe(p);
+    // n >> p;
+
+    n();
+    
+    cout << p().value << endl;
     // auto add = n + c1 + 3;
     // auto output = tributary::streaming::output::Print(add);
     // tributary::streaming::run(output);
 }
+
+// void stream() {
+//     tributary::streaming::Node n(generator);
+//     tributary::streaming::input::Const c1(5);
+
+
+//     // auto add = n + c1 + 3;
+//     // auto output = tributary::streaming::output::Print(add);
+//     // tributary::streaming::run(output);
+// }
 
 int main() {
     cout << "Export check: " << streamingExportCheck() << endl;

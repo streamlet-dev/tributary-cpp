@@ -1,10 +1,12 @@
 #pragma once
+#include <any>
 #include <deque>
 #include <functional>
 #include <future>
 #include <iostream>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -17,15 +19,16 @@
 
 namespace tributary {
 
-class T_EXPORT BaseNode {
-  friend T_EXPORT std::ostream& operator<<(std::ostream& ostream, const BaseNode& node) { return (ostream << node.name); }
+class T_EXPORT BaseValue {
+  friend T_EXPORT std::ostream& operator<<(std::ostream& ostream, const BaseValue& value) { return (ostream << value.name); }
 
 protected:
-  BaseNode() = default;
-  const std::string name = "basenode";
+  BaseValue() = default;
+  const std::string name = "BaseValue";
+
 };
 
-class T_EXPORT StreamNone : public BaseNode {
+class T_EXPORT StreamNone : public BaseValue {
 public:
   static StreamNone& inst() {
     static StreamNone inst;
@@ -38,7 +41,7 @@ private:
   const std::string name = "StreamNone";
 };
 
-class T_EXPORT StreamRepeat : public BaseNode {
+class T_EXPORT StreamRepeat : public BaseValue {
 public:
   static StreamRepeat& inst() {
     static StreamRepeat inst;
@@ -51,7 +54,7 @@ private:
   const std::string name = "StreamRepeat";
 };
 
-class T_EXPORT StreamEnd : public BaseNode {
+class T_EXPORT StreamEnd : public BaseValue {
 public:
   static StreamEnd& inst() {
     static StreamEnd inst;
@@ -72,11 +75,11 @@ struct T_EXPORT t_value {
     : hasValue(false)
     , state(&StreamNone::inst()) {}
 
-  t_value(BaseNode& _state)
+  t_value(BaseValue& _state)
     : hasValue(false)
     , state(&_state) {}
 
-  t_value(BaseNode* _state)
+  t_value(BaseValue* _state)
     : hasValue(false)
     , state(_state) {}
 
@@ -106,9 +109,18 @@ struct T_EXPORT t_value {
   }
 
   bool hasValue;
-  BaseNode* state;
+  BaseValue* state;
   T value;
 };
+
+
+class T_EXPORT BaseNode {
+  friend T_EXPORT std::ostream& operator<<(std::ostream& ostream, const BaseNode& node) { return (ostream << node.name); }
+protected:
+  BaseNode() = default;
+  const std::string name = "Base";
+};
+
 
 typedef std::string t_str;
 typedef tributary::BaseNode t_node;

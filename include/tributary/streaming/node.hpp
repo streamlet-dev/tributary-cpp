@@ -3,6 +3,7 @@
 #include <deque>
 #include <iostream>
 #include <thread>
+#include <utility>
 #include <vector>
 #include <tributary/base.hpp>
 #include <tributary/utils.hpp>
@@ -22,6 +23,9 @@ class T_EXPORT Node : public BaseNode {
   // Construct return type of provided function
   using ReturnType = invoke_result_t<Function, Args...>;
   using ValueType = t_value<ReturnType>;
+
+  template <typename OtherFunction, typename... OtherArgs>
+  friend class Node;
 
 public:
   Node(Function _func)
@@ -104,16 +108,25 @@ public:
     return _last;
   }
 
+  template <typename OtherFunction, typename... OtherArgs>
+  void pipe(Node<OtherFunction, OtherArgs...>& rhs) {
+    // wire lhs into rhs
+    _downstream.push_back(make_pair(&rhs, rhs._upstream.size()));
+    rhs._upstream.push_back(this);
+  }
+
   Node& operator>>(Node& rhs) {
     // wire lhs into rhs
-    _downstream.push_back(t_nodepos(&rhs, rhs._upstream.size()));
+    _downstream.push_back(make_pair(&rhs, rhs._upstream.size()));
     rhs._upstream.push_back(this);
+    return rhs;
   }
 
   Node& operator<<(Node& rhs) {
     // wire rhs into lhs
-    rhs._downstream.push_back(t_nodepos(this, _upstream.size()));
+    rhs._downstream.push_back(make_pair(this, _upstream.size()));
     _upstream.push_back(&rhs);
+    return *this;
   }
 
   void _push(ValueType& inp, size_t index) {
@@ -126,13 +139,15 @@ public:
     return _input[index].size() == 0 || _active[index].isNone();
   }
 
-  void _pop(size_t index) {
+  ValueType _pop(size_t index) {
     // pop value from downstream nodes
     if (_input[index].size() > 0) {
       auto ret = _input[index].front();
       _input[index].pop_front();
-      // return ret; // FIXME
+      return ret;
     }
+
+    return StreamNone::inst();
   }
 
 
@@ -199,9 +214,8 @@ public:
   //         else:
   //             self._last = nextLast
   //     else:
-  //         self._last = nextLast
-
     _last = nextLast;
+
     _output(_last);
 
     for (auto i = 0; i < _active.size(); ++i) {
@@ -228,32 +242,31 @@ public:
     // output value to downstream nodes
     // if downstreams, output
     if (!ret.isStreamNone() && !ret.isStreamRepeat()) {
-    //         for down, i in self.downstream():
+      for (auto j = 0; j< _downstream.size(); ++j) {
+        auto downpair = _downstream[j];
+        auto down = std::any_cast<Node>(downpair.first);
+        auto i = downpair.second;
 
-    //             if self._drop:
-    //                 if len(down._input[i]) > 0:
-    //                     # do nothing
-    //                     pass
-
-    //                 elif not isinstance(down._active[i], StreamNone):
-    //                     # do nothing
-    //                     pass
-
-    //                 else:
-    //                     await down._push(ret, i)
-
-    //             elif self._replace:
-    //                 if len(down._input[i]) > 0:
-    //                     _ = await down._pop(i)
-
-    //                 elif not isinstance(down._active[i], StreamNone):
-    //                     down._active[i] = ret
-
-    //                 else:
-    //                     await down._push(ret, i)
-
-    //             else:
-    //                 await down._push(ret, i)
+        if(_drop) {
+          if (down._input[i].size() > 0) {
+            // do nothing
+          } else if (!down._active[i].isStreamNone()) {
+            // do nothing
+          } else {
+            down._push(ret, i);
+          }
+        } else if (_replace) {
+          if(down._input[i].size() > 0) {
+            down._pop(i);
+          } else if (!down._active[i].isStreamNone()) {
+            down._active[i] = ret;
+          } else {
+            down._push(ret, i);
+          }
+        } else {
+          down._push(ret, i);
+        }
+      }
     }
     return ret;
   }
@@ -262,6 +275,13 @@ public:
     ostream << node.name << "[" << node.id.substr(0, 6) << "]";
     return ostream;
   }
+
+
+public:
+  vector<ValueType> _active;
+  vector<deque<ValueType>> _input;
+  vector<std::any> _upstream;
+  vector<pair<std::any, int>> _downstream;
 
 protected:
   // Name of the node
@@ -278,6 +298,10 @@ protected:
 
 private:
   bool _backpressure() const {
+    if (_drop || _replace) {
+      return false;
+    }
+
     // check if downstream() are all empty, if not then don't propogate
     for (auto input: _input) {
       if (input.size() != 0) {
@@ -289,16 +313,19 @@ private:
 
   bool _finished = false;
   chrono::nanoseconds _delay_interval = 0ns;
+
+  // TODO
   int _execution_count = 0;
   int _execution_max = 0;
-
+  bool _drop = false;
+  bool _replace = false;
   
-  static constexpr size_t Inputs = sizeof...(Args);
+  // static constexpr size_t Inputs = sizeof...(Args);
 
-  vector<ValueType> _active;
-  vector<deque<ValueType>> _input;
-  vector<t_nodeptr> _upstream;
-  vector<pair<t_nodeptr, int>> _downstream;
+  // vector<ValueType> _active;
+  // vector<deque<ValueType>> _input;
+  // vector<Node*> _upstream;
+  // vector<pair<Node*, int>> _downstream;
 };
 
 
