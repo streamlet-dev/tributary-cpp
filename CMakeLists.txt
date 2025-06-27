@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 3.7.2)
 project(tributary)
 include(CheckCCompilerFlag)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 
 if(NOT DEFINED T_CMAKE_MODULE_PATH)
     set(T_CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
@@ -136,61 +135,59 @@ else()
     include_directories( ${Boost_INCLUDE_DIRS} )
 endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c++1y -Wall")
-elseif(WIN32)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std=c++17 /WX")
+if(WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /await /EHsc /MP /bigobj")
+elseif(MACOS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -Wall")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fcoroutines -Wall")
 endif()
 
 if(WIN32)
     add_definitions(-DBOOST_UUID_FORCE_AUTO_LINK)
+    foreach(warning 4244 4251 4267 4275 4290 4786 4305 4996)
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd${warning}")
+    endforeach(warning)
     if(CMAKE_BUILD_TYPE_LOWER STREQUAL debug)
-        set(OPT_FLAGS " \
+        set(CMAKE_CXX_FLAGS " \
+            ${CMAKE_CXX_FLAGS} \
             /DEBUG \
             /Z7 \
             /Zi \
             ")
     else()
-        set(OPT_FLAGS " \
+        set(CMAKE_CXX_FLAGS " \
+            ${CMAKE_CXX_FLAGS} \
             /NDEBUG \
             /O2 \
             ")
     endif()
-    foreach(warning 4244 4251 4267 4275 4290 4786 4305 4996)
-        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd${warning}")
-    endforeach(warning)
-    set(CMAKE_CXX_FLAGS " /EHsc /MP /bigobj")
-
 else()
     if(CMAKE_BUILD_TYPE_LOWER STREQUAL debug)
-        set(OPT_FLAGS " \
+        set(CMAKE_CXX_FLAGS " \
+            ${CMAKE_CXX_FLAGS} \
             -O0 \
             -g3 \
             ")
     else()
-        set(OPT_FLAGS " \
+        set(CMAKE_CXX_FLAGS " \
+            ${CMAKE_CXX_FLAGS} \
             -O3 \
+            -DNDEBUG \
             -g0 \
             ")
     endif()
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
-    set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")
-    set(CMAKE_CXX_FLAGS " ${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS}")
 
     include_directories("/usr/local/include")
-
     # SET(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for Mac OS X" FORCE)
 endif()
 
 
-set(CMAKE_C_FLAGS " \
-    ${CMAKE_C_FLAGS} \
-    ${EXTENDED_FLAGS} \
-    ${OPT_FLAGS} \
-    ")
-
 # Build exprtk for expression parsing
 t_build_dep("exprtk" "${T_CMAKE_MODULE_PATH}/exprtk.txt.in")
+
+# t_build_dep("libuv" "${T_CMAKE_MODULE_PATH}/libuv.txt.in")
+t_build_dep("cppcoro" "${T_CMAKE_MODULE_PATH}/cppcoro.txt.in")
 
 set (SOURCE_FILES
     ${T_CPP_SRC}/src/base.cpp
@@ -200,18 +197,18 @@ set (SOURCE_FILES
     )
 
 add_library(tributary SHARED ${SOURCE_FILES})
-add_executable(test_nongtest ${T_CPP_SRC}/test/test_nongtest.cpp)
-target_link_libraries(test_nongtest tributary)
+target_link_libraries(tributary cppcoro)
 
 if(WIN32)
     target_compile_definitions(tributary PUBLIC T_EXPORTS=1 PRIVATE WIN32=1 _WIN32=1)
-    target_compile_definitions(test_nongtest PUBLIC WIN32=1 _WIN32=1)
 elseif(WIN32)
     target_compile_options(tributary PRIVATE -Wall -Werror $<$<CONFIG:DEBUG>:-fPIC -O0>)
-    target_compile_options(test_nongtest PRIVATE -Wall -Werror $<$<CONFIG:DEBUG>:-fPIC -O0>)
 endif()
 
 if(T_CPP_TESTS)
+    add_executable(test_nongtest ${T_CPP_SRC}/test/test_nongtest.cpp)
+    target_link_libraries(test_nongtest tributary)
+
     find_package(GTest REQUIRED)
     include(GoogleTest)
 
@@ -223,10 +220,14 @@ if(T_CPP_TESTS)
 
 
     if (WIN32)
+        target_compile_definitions(test_nongtest PUBLIC WIN32=1 _WIN32=1)
+
         add_executable(test_streaming ${T_CPP_SRC}/test/test_streaming.cpp ${SOURCE_FILES})
         target_compile_definitions(test_streaming PRIVATE T_EXPORTS=1 WIN32=1 _WIN32=1)
         target_link_libraries(test_streaming GTest::Main)
     else()
+        target_compile_options(test_nongtest PRIVATE -Wall -Werror $<$<CONFIG:DEBUG>:-fPIC -O0>)
+
         add_executable(test_streaming ${T_CPP_SRC}/test/test_streaming.cpp)
         target_link_libraries(test_streaming PRIVATE GTest::Main tributary)
     endif()

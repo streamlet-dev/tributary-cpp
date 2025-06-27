@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.7.2)
+
+project(cppcoro-download NONE)
+
+include(ExternalProject)
+
+ExternalProject_Add(cppcoro
+  GIT_REPOSITORY    https://github.com/andreasbuhr/cppcoro.git
+  GIT_TAG           main
+  SOURCE_DIR        "${CMAKE_BINARY_DIR}/cppcoro-src"
+  BINARY_DIR        "${CMAKE_BINARY_DIR}/cppcoro-build"
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND     ""
+  INSTALL_COMMAND   ""
+  TEST_COMMAND      ""
+  CMAKE_ARGS        "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+)

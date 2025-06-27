@@ -20,6 +20,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.9]
         event-name: [push]
+        gcc: [10]
 
     steps:
     - uses: actions/checkout@v4
@@ -29,7 +30,7 @@ jobs:
           git clone https://github.com/Microsoft/vcpkg
           cd vcpkg
           .\bootstrap-vcpkg.bat
-          .\vcpkg.exe install boost-algorithm boost-system boost-uuid gtest
+          .\vcpkg.exe install boost-algorithm boost-asio boost-coroutine boost-system boost-uuid gtest
           .\vcpkg.exe integrate install
       if: ${{ matrix.os == 'windows-latest' }}
       env:
@@ -43,27 +44,43 @@ jobs:
 
     - name: Install System Dependencies (Linux)
       run: |
+        sudo apt-get install gcc-${{ matrix.gcc }}
         wget https://boostorg.jfrog.io/artifactory/main/release/1.71.0/source/boost_1_71_0.tar.gz >/dev/null 2>&1
         tar xfz boost_1_71_0.tar.gz
         cd boost_1_71_0
         ./bootstrap.sh
         sudo ./b2 -j8 --with-system install
-        sudo apt-get install libgtest-dev
+        sudo apt-get install libgtest-dev 
       if: ${{ matrix.os == 'ubuntu-latest' }}
+      env:
+        CC: gcc-${{ matrix.gcc }}
+        CXX: g++-${{ matrix.gcc }}
 
     - name: Lint
       run: |
-        ./scripts/lint.sh
+        ./bin/lint.sh
       if: ${{ matrix.os == 'macos-latest' }}
 
-    - name: Build
+    - name: Build (Mac)
       run: |
         mkdir build
         cmake -Bbuild .
         cmake --build build/ --target all -- -j2
-      if: ${{ matrix.os != 'windows-latest' }}
+      if: ${{ matrix.os == 'macos-latest' }}
 
-    - name: Build
+    - name: Build (Linux)
+      run: |
+        mkdir build
+        cmake -Bbuild .
+        cmake --build build/ --target all -- -j2
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      env:
+        CC: gcc-${{ matrix.gcc }}
+        CXX: g++-${{ matrix.gcc }}
+        CMAKE_C_COMPILER:  gcc-${{ matrix.gcc }}
+        CMAKE_CXX_COMPILER: g++-${{ matrix.gcc }}
+
+    - name: Build (Windows)
       run: |
         mkdir build
         cmake -B build -A x64 -DCMAKE_TOOLCHAIN_FILE="vcpkg\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE=Debug
